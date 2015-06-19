@@ -27,25 +27,39 @@ public class HVLevelEditMainForm extends HvlTemplateInteg2DBasic {
 	@Override
 	public void initialize() {
 		getTextureLoader().loadResource("White");
-		getTextureLoader().loadResource("ButtonOff");
-		getTextureLoader().loadResource("ButtonHover");
-		getTextureLoader().loadResource("ButtonOn");
 		getTextureLoader().loadResource("MenuBar");
+		getTextureLoader().loadResource("NewButton/Off");
+		getTextureLoader().loadResource("NewButton/Hover");
+		getTextureLoader().loadResource("NewButton/On");
+		getTextureLoader().loadResource("OpenButton/Off");
+		getTextureLoader().loadResource("OpenButton/Hover");
+		getTextureLoader().loadResource("OpenButton/On");
+		getTextureLoader().loadResource("SaveButton/Off");
+		getTextureLoader().loadResource("SaveButton/Hover");
+		getTextureLoader().loadResource("SaveButton/On");
 
-		menuBar = new HvlArrangerBox(0, 0, Display.getWidth(), 96, Display.getHeight(), ArrangementStyle.HORIZONTAL);
+		menuBar = new HvlArrangerBox(0, 0, Display.getWidth(), 96,
+				Display.getHeight(), ArrangementStyle.HORIZONTAL);
 		menuBar.setAlign(0.5f);
 		menuBar.setBorderL(16f);
 
-		menuBarBackground = new HvlExpandingRectangle(getTextureLoader().getResource(4),
-				0.0625f, 0.9375f, 0.0625f, 0.9375f, 0, 0, 0, menuBar.getHeight(), 8, 8);
-		
-		newButton = new HvlTextureButton(0, 0, 64, 64, Display.getHeight(), getTextureLoader().getResource(1), getTextureLoader().getResource(2), getTextureLoader().getResource(3)) {
+		menuBarBackground = new HvlExpandingRectangle(getTextureLoader()
+				.getResource(1), 0.0625f, 0.9375f, 0.0625f, 0.9375f, 0, 0, 0,
+				menuBar.getHeight(), 8, 8);
+
+		newButton = new HvlTextureButton(0, 0, 64, 64, Display.getHeight(),
+				getTextureLoader().getResource(2), getTextureLoader()
+						.getResource(3), getTextureLoader().getResource(4)) {
 
 		};
-		openButton = new HvlTextureButton(0, 0, 64, 64, Display.getHeight(), getTextureLoader().getResource(1), getTextureLoader().getResource(2), getTextureLoader().getResource(3)) {
+		openButton = new HvlTextureButton(0, 0, 64, 64, Display.getHeight(),
+				getTextureLoader().getResource(5), getTextureLoader()
+						.getResource(6), getTextureLoader().getResource(7)) {
 
 		};
-		saveButton = new HvlTextureButton(0, 0, 64, 64, Display.getHeight(), getTextureLoader().getResource(1), getTextureLoader().getResource(2), getTextureLoader().getResource(3)) {
+		saveButton = new HvlTextureButton(0, 0, 64, 64, Display.getHeight(),
+				getTextureLoader().getResource(8), getTextureLoader()
+						.getResource(9), getTextureLoader().getResource(10)) {
 
 		};
 
@@ -67,12 +81,14 @@ public class HVLevelEditMainForm extends HvlTemplateInteg2DBasic {
 		menuBar.setHeightInversion(Display.getHeight());
 		menuBarBackground.setY(menuBar.getY());
 		menuBarBackground.setTotalWidth(menuBar.getWidth());
-		
+		newButton.setHeightInversion(Display.getHeight());
+		openButton.setHeightInversion(Display.getHeight());
+		saveButton.setHeightInversion(Display.getHeight());
+
 		draw(delta);
 	}
-	
-	private void draw(float delta)
-	{
+
+	private void draw(float delta) {
 		menuBarBackground.draw();
 		HvlMenu.updateMenus(delta);
 	}
