@@ -2,14 +2,17 @@ package com.hvleveledit;
 
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 import org.newdawn.slick.opengl.Texture;
@@ -34,6 +37,8 @@ public class HVLevelEditMainForm extends HvlTemplateInteg2DBasic {
 	private HvlExpandingRectangle menuBarBackground;
 
 	private HvlTileMap tilemap;
+	
+	private int tileSize;
 
 	public HVLevelEditMainForm(int frameRateArg, int width, int height,
 			String title, HvlDisplayMode displayModeArg) {
@@ -42,6 +47,8 @@ public class HVLevelEditMainForm extends HvlTemplateInteg2DBasic {
 
 	@Override
 	public void initialize() {
+		tileSize = 64;
+		
 		getTextureLoader().loadResource("White");
 		getTextureLoader().loadResource("MenuBar");
 		getTextureLoader().loadResource("NewButton/Off");
@@ -228,7 +235,26 @@ public class HVLevelEditMainForm extends HvlTemplateInteg2DBasic {
 		saveButton = new HvlTextureButton(0, 0, 64, 64, Display.getHeight(),
 				getTextureLoader().getResource(8), getTextureLoader()
 						.getResource(9), getTextureLoader().getResource(10)) {
+			@Override
+			public void onTriggered() {
+				if (tilemap == null) return;
+				
+				JFileChooser filePicker = new JFileChooser();
+				filePicker.showSaveDialog(null);
+				File f = filePicker.getSelectedFile();
 
+				if (f == null)
+					return;
+
+				try {
+					BufferedWriter writer = new BufferedWriter(
+							new FileWriter(f));
+					writer.write(HvlTileMap.save(tilemap));
+					writer.close();
+				} catch (IOException e) {
+					
+				}
+			}
 		};
 
 		mainMenu = new HvlMenu() {
@@ -253,12 +279,19 @@ public class HVLevelEditMainForm extends HvlTemplateInteg2DBasic {
 		openButton.setHeightInversion(Display.getHeight());
 		saveButton.setHeightInversion(Display.getHeight());
 
-		if (tilemap != null && Mouse.isButtonDown(1))
-		{
+		if (tilemap != null && Mouse.isButtonDown(1)) {
 			tilemap.setX(tilemap.getX() + Mouse.getDX());
-			tilemap.setY(tilemap.getY() + Mouse.getDY());
+			tilemap.setY(tilemap.getY() - Mouse.getDY());
 		}
 		
+		if (tilemap != null && (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) || Keyboard.isKeyDown(Keyboard.KEY_RCONTROL)))
+		{
+			tileSize += (Mouse.getDWheel() / 120) * 2;
+			tileSize = Math.max(Math.min(256, tileSize), 4);
+			tilemap.setTileWidth(tileSize);
+			tilemap.setTileHeight(tileSize);
+		}
+
 		draw(delta);
 	}
 
