@@ -1,9 +1,11 @@
 package com.osreboot.ridhvl.hvleveledit;
 
+import com.osreboot.ridhvl.display.collection.HvlDisplayModeResizable;
+
 public class Main {
 
 	public static void main(String[] args) {
-		System.out.println("Hey!");
+		new HVLevelEditMainForm(60, 1300, 400, "HVLevelEdit", new HvlDisplayModeResizable()).start();
 	}
 
 }
