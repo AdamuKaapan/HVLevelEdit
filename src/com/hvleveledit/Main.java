@@ -1,4 +1,4 @@
-package com.osreboot.ridhvl.hvleveledit;
+package com.hvleveledit;
 
 import com.osreboot.ridhvl.display.collection.HvlDisplayModeResizable;
 
