@@ -15,6 +15,7 @@ import javax.swing.JOptionPane;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
+import org.newdawn.slick.Color;
 import org.newdawn.slick.opengl.Texture;
 import org.newdawn.slick.util.BufferedImageUtil;
 
@@ -25,6 +26,7 @@ import com.osreboot.ridhvl.menu.component.HvlArrangerBox.ArrangementStyle;
 import com.osreboot.ridhvl.menu.component.HvlButton;
 import com.osreboot.ridhvl.menu.component.collection.HvlTextureButton;
 import com.osreboot.ridhvl.painter.painter2d.HvlExpandingRectangle;
+import com.osreboot.ridhvl.painter.painter2d.HvlPainter2D;
 import com.osreboot.ridhvl.template.HvlTemplateInteg2DBasic;
 import com.osreboot.ridhvl.tile.HvlTileMap;
 import com.osreboot.ridhvl.tile.collection.HvlSimpleTile;
@@ -37,7 +39,7 @@ public class HVLevelEditMainForm extends HvlTemplateInteg2DBasic {
 	private HvlExpandingRectangle menuBarBackground;
 
 	private HvlTileMap tilemap;
-	
+
 	private int tileSize;
 
 	public HVLevelEditMainForm(int frameRateArg, int width, int height,
@@ -48,7 +50,7 @@ public class HVLevelEditMainForm extends HvlTemplateInteg2DBasic {
 	@Override
 	public void initialize() {
 		tileSize = 64;
-		
+
 		getTextureLoader().loadResource("White");
 		getTextureLoader().loadResource("MenuBar");
 		getTextureLoader().loadResource("NewButton/Off");
@@ -60,6 +62,7 @@ public class HVLevelEditMainForm extends HvlTemplateInteg2DBasic {
 		getTextureLoader().loadResource("SaveButton/Off");
 		getTextureLoader().loadResource("SaveButton/Hover");
 		getTextureLoader().loadResource("SaveButton/On");
+		getTextureLoader().loadResource("TileBox");
 
 		menuBar = new HvlArrangerBox(0, 0, Display.getWidth(), 96,
 				Display.getHeight(), ArrangementStyle.HORIZONTAL);
@@ -237,8 +240,9 @@ public class HVLevelEditMainForm extends HvlTemplateInteg2DBasic {
 						.getResource(9), getTextureLoader().getResource(10)) {
 			@Override
 			public void onTriggered() {
-				if (tilemap == null) return;
-				
+				if (tilemap == null)
+					return;
+
 				JFileChooser filePicker = new JFileChooser();
 				filePicker.showSaveDialog(null);
 				File f = filePicker.getSelectedFile();
@@ -252,7 +256,7 @@ public class HVLevelEditMainForm extends HvlTemplateInteg2DBasic {
 					writer.write(HvlTileMap.save(tilemap));
 					writer.close();
 				} catch (IOException e) {
-					
+
 				}
 			}
 		};
@@ -283,9 +287,10 @@ public class HVLevelEditMainForm extends HvlTemplateInteg2DBasic {
 			tilemap.setX(tilemap.getX() + Mouse.getDX());
 			tilemap.setY(tilemap.getY() - Mouse.getDY());
 		}
-		
-		if (tilemap != null && (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) || Keyboard.isKeyDown(Keyboard.KEY_RCONTROL)))
-		{
+
+		if (tilemap != null
+				&& (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) || Keyboard
+						.isKeyDown(Keyboard.KEY_RCONTROL))) {
 			tileSize += (Mouse.getDWheel() / 120) * 2;
 			tileSize = Math.max(Math.min(256, tileSize), 4);
 			tilemap.setTileWidth(tileSize);
@@ -296,8 +301,24 @@ public class HVLevelEditMainForm extends HvlTemplateInteg2DBasic {
 	}
 
 	private void draw(float delta) {
-		if (tilemap != null)
+		if (tilemap != null) {
 			tilemap.draw(delta);
+
+			float translatedX = Mouse.getX() - tilemap.getX();
+			float translatedY = (Display.getHeight() - Mouse.getY())
+					- tilemap.getY();
+			int tileX = (int) (translatedX / tileSize);
+			int tileY = (int) (translatedY / tileSize);
+
+			if (tileX > 0 && tileX < tilemap.getMapWidth() && tileY > 0
+					&& tileY < tilemap.getMapHeight()) {
+				HvlPainter2D.hvlDrawQuad(tilemap.getX() + (tileX * tileSize),
+						tilemap.getY() + (tileY * tileSize), tileSize,
+						tileSize, getTextureLoader().getResource(11),
+						Color.white);
+			}
+		}
+
 		menuBarBackground.draw();
 		HvlMenu.updateMenus(delta);
 	}
