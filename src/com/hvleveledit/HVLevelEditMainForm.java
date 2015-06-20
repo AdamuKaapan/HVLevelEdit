@@ -78,100 +78,21 @@ public class HVLevelEditMainForm extends HvlTemplateInteg2DBasic {
 						.getResource(3), getTextureLoader().getResource(4)) {
 			@Override
 			public void onTriggered() {
-				int width = -1, height = -1;
-				boolean isValidWH = false;
 
-				do {
-					String input = JOptionPane
-							.showInputDialog("What are the dimensions of this map?");
+				int[] mapDims = getNumberPair("What are the map dimensions?");
+				if (mapDims == null)
+					return;
 
-					if (input == null)
-						return;
+				Texture t = getTexture();
+				if (t == null)
+					return;
 
-					String[] split = input.split(",");
-					if (split.length != 2) {
-						JOptionPane.showMessageDialog(null,
-								"Enter two integers separated by a comma.");
-						continue;
-					}
+				int[] tileDims = getNumberPair("In tiles, what are the dimensions of this tilemap?");
+				if (tileDims == null)
+					return;
 
-					try {
-						width = Integer.parseInt(split[0].trim());
-						height = Integer.parseInt(split[1].trim());
-					} catch (NumberFormatException e) {
-						JOptionPane
-								.showMessageDialog(null,
-										"You've got an invalid number there somewhere.");
-						continue;
-					}
-
-					if (width < 0 || height < 0) {
-						JOptionPane.showMessageDialog(null,
-								"Please enter positive integers...");
-						continue;
-					}
-
-					isValidWH = true;
-				} while (!isValidWH);
-
-				Texture t = null;
-				boolean isValidT = false;
-				do {
-					JFileChooser filePicker = new JFileChooser();
-					filePicker.showOpenDialog(null);
-					File f = filePicker.getSelectedFile();
-					if (f == null)
-						return;
-
-					try {
-						BufferedImage img = ImageIO.read(f);
-						t = BufferedImageUtil.getTexture("tilemap", img);
-					} catch (IOException e) {
-						JOptionPane.showMessageDialog(null,
-								"Something went wrong... derp?");
-						continue;
-					}
-
-					isValidT = true;
-				} while (!isValidT);
-
-				boolean isValidTS = false;
-				int tilesWidth = -1, tilesHeight = -1;
-
-				do {
-					String input = JOptionPane
-							.showInputDialog("In tiles, what are the dimensions of this tilemap?");
-					if (input == null)
-						return;
-
-					String[] split = input.split(",");
-					if (split.length != 2) {
-						JOptionPane.showMessageDialog(null,
-								"Enter two integers separated by a comma.");
-						continue;
-					}
-
-					try {
-						tilesWidth = Integer.parseInt(split[0].trim());
-						tilesHeight = Integer.parseInt(split[1].trim());
-					} catch (NumberFormatException e) {
-						JOptionPane
-								.showMessageDialog(null,
-										"You've got an invalid number there somewhere.");
-						continue;
-					}
-
-					if (tilesWidth < 0 || tilesHeight < 0) {
-						JOptionPane.showMessageDialog(null,
-								"Please enter positive integers...");
-						continue;
-					}
-
-					isValidTS = true;
-				} while (!isValidTS);
-
-				tilemap = new HvlTileMap(t, tilesWidth, tilesHeight, width,
-						height, 0, 0, 64, 64);
+				tilemap = new HvlTileMap(t, tileDims[0], tileDims[1],
+						mapDims[0], mapDims[1], 0, 0, 64, 64);
 				tilemap.fill(new HvlSimpleTile(0));
 			}
 		};
@@ -180,59 +101,15 @@ public class HVLevelEditMainForm extends HvlTemplateInteg2DBasic {
 						.getResource(6), getTextureLoader().getResource(7)) {
 			@Override
 			public void onTriggered() {
-				boolean isValidFile = false;
-				StringBuilder text = null;
+				String fileText = getFileText();
+				if (fileText == null)
+					return;
 
-				do {
-					JFileChooser filePicker = new JFileChooser();
-					filePicker.showOpenDialog(null);
+				Texture t = getTexture();
+				if (t == null)
+					return;
 
-					File f = filePicker.getSelectedFile();
-					if (f == null)
-						return;
-
-					try {
-						BufferedReader reader = new BufferedReader(
-								new FileReader(f));
-						text = new StringBuilder();
-						String line;
-						while ((line = reader.readLine()) != null) {
-							text.append(line);
-							text.append(System.lineSeparator());
-						}
-						reader.close();
-					} catch (IOException e) {
-						JOptionPane.showMessageDialog(null,
-								"Something went wrong... derp?");
-						continue;
-					}
-
-					isValidFile = true;
-				} while (!isValidFile);
-
-				Texture t = null;
-				boolean isValidTexture = false;
-
-				do {
-					JFileChooser filePicker = new JFileChooser();
-					filePicker.showOpenDialog(null);
-
-					File f = filePicker.getSelectedFile();
-					if (f == null)
-						return;
-
-					try {
-						BufferedImage img = ImageIO.read(f);
-						t = BufferedImageUtil.getTexture("tilemap", img);
-					} catch (IOException e) {
-						JOptionPane.showMessageDialog(null,
-								"Something went wrong... derp?");
-						continue;
-					}
-					isValidTexture = true;
-				} while (!isValidTexture);
-
-				tilemap = HvlTileMap.load(text.toString(), t, 0, 0, 64, 64);
+				tilemap = HvlTileMap.load(fileText, t, 0, 0, 64, 64);
 			}
 		};
 		saveButton = new HvlTextureButton(0, 0, 64, 64, Display.getHeight(),
@@ -321,5 +198,103 @@ public class HVLevelEditMainForm extends HvlTemplateInteg2DBasic {
 
 		menuBarBackground.draw();
 		HvlMenu.updateMenus(delta);
+	}
+
+	private String getFileText() {
+		boolean isValid = false;
+		StringBuilder toReturn = null;
+
+		do {
+			JFileChooser filePicker = new JFileChooser();
+			filePicker.showOpenDialog(null);
+
+			File f = filePicker.getSelectedFile();
+			if (f == null)
+				return null;
+
+			try {
+				BufferedReader reader = new BufferedReader(new FileReader(f));
+				toReturn = new StringBuilder();
+				String line;
+				while ((line = reader.readLine()) != null) {
+					toReturn.append(line);
+					toReturn.append(System.lineSeparator());
+				}
+				reader.close();
+			} catch (IOException e) {
+				JOptionPane.showMessageDialog(null,
+						"Something went wrong... derp?");
+				continue;
+			}
+
+			isValid = true;
+		} while (!isValid);
+
+		return toReturn.toString();
+	}
+
+	private Texture getTexture() {
+		Texture toReturn = null;
+		boolean isValid = false;
+		do {
+			JFileChooser filePicker = new JFileChooser();
+			filePicker.showOpenDialog(null);
+			File f = filePicker.getSelectedFile();
+			if (f == null)
+				return null;
+
+			try {
+				BufferedImage img = ImageIO.read(f);
+				toReturn = BufferedImageUtil.getTexture("tilemap", img);
+			} catch (IOException e) {
+				JOptionPane.showMessageDialog(null,
+						"Something went wrong... derp?");
+				continue;
+			}
+
+			isValid = true;
+		} while (!isValid);
+
+		return toReturn;
+	}
+
+	private int[] getNumberPair(String prompt) {
+		boolean isValid = false;
+		int[] toReturn = null;
+
+		do {
+
+			String input = JOptionPane.showInputDialog(prompt);
+
+			if (input == null)
+				return null;
+
+			String[] split = input.split(",");
+			if (split.length != 2) {
+				JOptionPane.showMessageDialog(null,
+						"Enter two integers separated by a comma.");
+				continue;
+			}
+
+			toReturn = new int[2];
+
+			try {
+				toReturn[0] = Integer.parseInt(split[0].trim());
+				toReturn[1] = Integer.parseInt(split[1].trim());
+			} catch (NumberFormatException e) {
+				JOptionPane.showMessageDialog(null,
+						"You've got an invalid number there somewhere.");
+				continue;
+			}
+
+			if (toReturn[0] < 0 || toReturn[1] < 0) {
+				JOptionPane.showMessageDialog(null,
+						"Please enter positive integers...");
+				continue;
+			}
+
+			isValid = true;
+		} while (!isValid);
+		return toReturn;
 	}
 }
