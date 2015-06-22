@@ -246,7 +246,7 @@ public class HVLevelEditMainForm extends HvlTemplateInteg2DBasic {
 
 	@Override
 	public void update(float delta) {
-		dimensionUpdate();
+		sizeUpdate();
 
 		if (tilemap != null) {
 			if (Mouse.isButtonDown(1) || Mouse.isButtonDown(2)) {
@@ -331,7 +331,7 @@ public class HVLevelEditMainForm extends HvlTemplateInteg2DBasic {
 		draw(delta);
 	}
 
-	private void dimensionUpdate() {
+	private void sizeUpdate() {
 		menuBar.setY(Display.getHeight() - menuBar.getHeight());
 		menuBar.setWidth(Display.getWidth());
 		menuBar.setHeightInversion(Display.getHeight());
@@ -387,6 +387,30 @@ public class HVLevelEditMainForm extends HvlTemplateInteg2DBasic {
 				if (layer < tilemap.getLayerCount()) {
 					HvlPainter2D.hvlDrawQuad(32, 32, 256, 256, tilemap
 							.getLayer(layer).getInfo().texture);
+
+					int miniX = getMiniMouseTileX();
+					int miniY = getMiniMouseTileY();
+
+					if (miniX >= 0
+							&& miniX < tilemap.getLayer(layer).getInfo().tileWidth
+							&& miniY >= 0
+							&& miniY < tilemap.getLayer(layer).getInfo().tileHeight) {
+						float miniW = 256 / tilemap.getLayer(layer).getInfo().tileWidth;
+						float miniH = 256 / tilemap.getLayer(layer).getInfo().tileHeight;
+
+						HvlPainter2D
+								.hvlDrawQuad(32 + (miniX * miniW),
+										32 + (miniY * miniH), miniW, miniH,
+										getTextureLoader().getResource(11),
+										Color.white);
+
+						if (Mouse.isButtonDown(0)) {
+							int selectedTile = miniY
+									* tilemap.getLayer(layer).getInfo().tileHeight
+									+ miniX;
+							tileTextBox.setText(selectedTile + "");
+						}
+					}
 				}
 			}
 		}
@@ -529,5 +553,23 @@ public class HVLevelEditMainForm extends HvlTemplateInteg2DBasic {
 
 	private int getMouseTileY() {
 		return (int) (((Display.getHeight() - Mouse.getY()) - tilemap.getY()) / tileSize);
+	}
+
+	private int getMiniMouseTileX() {
+		int layer = Integer.parseInt(layerTextBox.getText().trim());
+		if (layer < tilemap.getLayerCount()) {
+			int trans = Mouse.getX() - 32;
+			return trans / (256 / tilemap.getLayer(layer).getInfo().tileWidth);
+		}
+		return -1;
+	}
+
+	private int getMiniMouseTileY() {
+		int layer = Integer.parseInt(layerTextBox.getText().trim());
+		if (layer < tilemap.getLayerCount()) {
+			int trans = (Display.getHeight() - Mouse.getY()) - 32;
+			return trans / (256 / tilemap.getLayer(layer).getInfo().tileHeight);
+		}
+		return -1;
 	}
 }
