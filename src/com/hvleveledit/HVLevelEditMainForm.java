@@ -163,12 +163,20 @@ public class HVLevelEditMainForm extends HvlTemplateInteg2DBasic {
 				}
 			}
 		};
-		resizeButton = new HvlTextureButton(0, 0, 64, 64, Display.getHeight(), 
-				getTextureLoader().getResource(14), getTextureLoader().getResource(15), getTextureLoader().getResource(16))
-		{
-			
+		resizeButton = new HvlTextureButton(0, 0, 64, 64, Display.getHeight(),
+				getTextureLoader().getResource(14), getTextureLoader()
+						.getResource(15), getTextureLoader().getResource(16)) {
+			@Override
+			public void onTriggered() {
+				if (tilemap != null) {
+					int[] dims = getNumberPair("Please enter the new dimensions?");
+					for (int i = 0; i < tilemap.getLayerCount(); i++) {
+						tilemap.getLayer(i).resize(dims[0], dims[1]);
+					}
+				}
+			}
 		};
-		
+
 		tileArr = new HvlArrangerBox(0, 320, 256, 48, Display.getHeight(),
 				ArrangementStyle.HORIZONTAL);
 		tileArr.setBorderL(8);
@@ -217,7 +225,7 @@ public class HVLevelEditMainForm extends HvlTemplateInteg2DBasic {
 		layerTextBox.setOffsetX(6f);
 		layerTextBox.setTextColor(Color.black);
 		layerTextBox.setMaxCharacters(2);
-		
+
 		mainMenu = new HvlMenu() {
 
 		};
@@ -306,15 +314,15 @@ public class HVLevelEditMainForm extends HvlTemplateInteg2DBasic {
 						.parseInt(tileTextBox.getText().trim());
 				int currentLayer = Integer.parseInt(layerTextBox.getText()
 						.trim());
-				
+
 				currentTile += Mouse.getDWheel() / 120;
-				
+
 				if (currentTile >= tilemap.getLayer(currentLayer).getInfo().tileWidth
 						* tilemap.getLayer(currentLayer).getInfo().tileHeight)
 					currentTile = -1;
 				if (currentTile < -1)
-					currentTile = (tilemap.getLayer(currentLayer).getInfo().tileWidth
-							* tilemap.getLayer(currentLayer).getInfo().tileHeight) - 1;
+					currentTile = (tilemap.getLayer(currentLayer).getInfo().tileWidth * tilemap
+							.getLayer(currentLayer).getInfo().tileHeight) - 1;
 
 				tileTextBox.setText(currentTile + "");
 			}
