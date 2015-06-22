@@ -267,19 +267,22 @@ public class HVLevelEditMainForm extends HvlTemplateInteg2DBasic {
 								&& tileY < tilemap.getLayer(layer)
 										.getMapHeight()) {
 							if (!tileTextBox.getText().trim().isEmpty()) {
-								int tileCoord = Integer.parseInt(tileTextBox
-										.getText().trim());
-								if (tileCoord < 0) {
-									tilemap.getLayer(layer).setTile(tileX,
-											tileY, null);
-								} else if (tileCoord < tilemap.getLayer(layer)
-										.getInfo().tileWidth
-										* tilemap.getLayer(layer).getInfo().tileHeight) {
-									tilemap.getLayer(layer)
-											.setTile(
-													tileX,
-													tileY,
-													new HvlSimpleTile(tileCoord));
+								try {
+									int tileCoord = Integer
+											.parseInt(tileTextBox.getText()
+													.trim());
+									if (tileCoord < 0) {
+										tilemap.getLayer(layer).setTile(tileX,
+												tileY, null);
+									} else if (tileCoord < tilemap.getLayer(
+											layer).getInfo().tileWidth
+											* tilemap.getLayer(layer).getInfo().tileHeight) {
+										tilemap.getLayer(layer).setTile(tileX,
+												tileY,
+												new HvlSimpleTile(tileCoord));
+									}
+								} catch (NumberFormatException e) {
+
 								}
 							}
 						}
@@ -310,21 +313,25 @@ public class HVLevelEditMainForm extends HvlTemplateInteg2DBasic {
 				layerTextBox.setText(currentLayer + "");
 			} else if (!tileTextBox.getText().trim().isEmpty()
 					&& !layerTextBox.getText().trim().isEmpty()) {
-				int currentTile = Integer
-						.parseInt(tileTextBox.getText().trim());
-				int currentLayer = Integer.parseInt(layerTextBox.getText()
-						.trim());
+				try {
+					int currentTile = Integer.parseInt(tileTextBox.getText()
+							.trim());
+					int currentLayer = Integer.parseInt(layerTextBox.getText()
+							.trim());
 
-				currentTile += Mouse.getDWheel() / 120;
+					currentTile += Mouse.getDWheel() / 120;
 
-				if (currentTile >= tilemap.getLayer(currentLayer).getInfo().tileWidth
-						* tilemap.getLayer(currentLayer).getInfo().tileHeight)
-					currentTile = -1;
-				if (currentTile < -1)
-					currentTile = (tilemap.getLayer(currentLayer).getInfo().tileWidth * tilemap
-							.getLayer(currentLayer).getInfo().tileHeight) - 1;
+					if (currentTile >= tilemap.getLayer(currentLayer).getInfo().tileWidth
+							* tilemap.getLayer(currentLayer).getInfo().tileHeight)
+						currentTile = -1;
+					if (currentTile < -1)
+						currentTile = (tilemap.getLayer(currentLayer).getInfo().tileWidth * tilemap
+								.getLayer(currentLayer).getInfo().tileHeight) - 1;
 
-				tileTextBox.setText(currentTile + "");
+					tileTextBox.setText(currentTile + "");
+				} catch (NumberFormatException e) {
+
+				}
 			}
 		}
 
@@ -409,6 +416,31 @@ public class HVLevelEditMainForm extends HvlTemplateInteg2DBasic {
 									* tilemap.getLayer(layer).getInfo().tileHeight
 									+ miniX;
 							tileTextBox.setText(selectedTile + "");
+						}
+					}
+
+					// Draw the ACTUAL tile that is selected as well
+					if (!tileTextBox.getText().trim().isEmpty()) {
+						try {
+							int tile = Integer.parseInt(tileTextBox.getText()
+									.trim());
+							if (tile >= 0) {
+								int tileX = tile
+										% tilemap.getLayer(layer).getInfo().tileWidth;
+								int tileY = tile
+										/ tilemap.getLayer(layer).getInfo().tileWidth;
+								float miniW = 256 / tilemap.getLayer(layer)
+										.getInfo().tileWidth;
+								float miniH = 256 / tilemap.getLayer(layer)
+										.getInfo().tileHeight;
+
+								HvlPainter2D.hvlDrawQuad(32 + (tileX * miniW),
+										32 + (tileY * miniH), miniW, miniH,
+										getTextureLoader().getResource(11),
+										Color.white);
+							}
+						} catch (NumberFormatException e) {
+
 						}
 					}
 				}
