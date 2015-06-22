@@ -25,6 +25,7 @@ import com.osreboot.ridhvl.menu.HvlMenu;
 import com.osreboot.ridhvl.menu.component.HvlArrangerBox;
 import com.osreboot.ridhvl.menu.component.HvlArrangerBox.ArrangementStyle;
 import com.osreboot.ridhvl.menu.component.HvlButton;
+import com.osreboot.ridhvl.menu.component.HvlLabel;
 import com.osreboot.ridhvl.menu.component.collection.HvlExpandableRectTextBox;
 import com.osreboot.ridhvl.menu.component.collection.HvlTextureButton;
 import com.osreboot.ridhvl.painter.painter2d.HvlExpandingRectangle;
@@ -38,7 +39,9 @@ import com.osreboot.ridhvl.tile.collection.HvlSimpleTile;
 public class HVLevelEditMainForm extends HvlTemplateInteg2DBasic {
 	private HvlMenu mainMenu;
 	private HvlArrangerBox menuBar;
+	private HvlArrangerBox tileArr, layerArr;
 	private HvlButton newButton, openButton, saveButton;
+	private HvlLabel tileLabel, layerLabel;
 	private HvlExpandableRectTextBox tileTextBox, layerTextBox;
 
 	private HvlExpandingRectangle menuBarBackground, tilemapBackground;
@@ -158,7 +161,29 @@ public class HVLevelEditMainForm extends HvlTemplateInteg2DBasic {
 			}
 		};
 
-		tileTextBox = new HvlExpandableRectTextBox(32, 320, 256, 48,
+		tileArr = new HvlArrangerBox(0, 320, 256, 48, Display.getHeight(),
+				ArrangementStyle.HORIZONTAL);
+		tileArr.setBorderL(8);
+		tileArr.setAlign(0.5f);
+
+		tileLabel = new HvlLabel(0, 0, Display.getHeight(),
+				new HvlFontPainter2D(getTextureLoader().getResource(12),
+						HvlFontUtil.DEFAULT, 2048, 2048, 112, 144, 18), "tile",
+				Color.black);
+		tileLabel.setScale(0.25f);
+		
+		layerArr = new HvlArrangerBox(0, tileArr.getY() + tileArr.getHeight() + 32, 256, 48, Display.getHeight(),
+				ArrangementStyle.HORIZONTAL);
+		layerArr.setBorderL(8);
+		layerArr.setAlign(0.5f);
+		
+		layerLabel = new HvlLabel(0, 0, Display.getHeight(),
+				new HvlFontPainter2D(getTextureLoader().getResource(12),
+						HvlFontUtil.DEFAULT, 2048, 2048, 112, 144, 18), "layer",
+				Color.black);
+		layerLabel.setScale(0.25f);
+
+		tileTextBox = new HvlExpandableRectTextBox(0, 0, 256, 48,
 				Display.getHeight(), "-1", new HvlExpandingRectangle(
 						getTextureLoader().getResource(1), 0.0625f, 0.9375f,
 						0.0625f, 0.9375f, 0, 0, 0, 0, 4, 4),
@@ -192,8 +217,12 @@ public class HVLevelEditMainForm extends HvlTemplateInteg2DBasic {
 		menuBar.add(newButton);
 		menuBar.add(openButton);
 		menuBar.add(saveButton);
-		mainMenu.add(tileTextBox);
-		mainMenu.add(layerTextBox);
+		mainMenu.add(tileArr);
+		tileArr.add(tileLabel);
+		tileArr.add(tileTextBox);
+		mainMenu.add(layerArr);
+		layerArr.add(layerLabel);
+		layerArr.add(layerTextBox);
 
 		HvlMenu.setCurrent(mainMenu);
 	}
@@ -212,7 +241,7 @@ public class HVLevelEditMainForm extends HvlTemplateInteg2DBasic {
 
 				if (!layerTextBox.getText().trim().isEmpty()) {
 					int layer = Integer.parseInt(layerTextBox.getText().trim());
-					
+
 					if (layer < tilemap.getLayerCount()) {
 						if (tileX >= 0
 								&& tileX < tilemap.getLayer(layer)
@@ -265,7 +294,9 @@ public class HVLevelEditMainForm extends HvlTemplateInteg2DBasic {
 		newButton.setHeightInversion(Display.getHeight());
 		openButton.setHeightInversion(Display.getHeight());
 		saveButton.setHeightInversion(Display.getHeight());
+		tileTextBox.setWidth(320 - tileTextBox.getX() - 32);
 		tileTextBox.setHeightInversion(Display.getHeight());
+		layerTextBox.setWidth(320 - layerTextBox.getX() - 32);
 		layerTextBox.setHeightInversion(Display.getHeight());
 	}
 
