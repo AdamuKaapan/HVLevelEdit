@@ -40,7 +40,7 @@ public class HVLevelEditMainForm extends HvlTemplateInteg2DBasic {
 	private HvlMenu mainMenu;
 	private HvlArrangerBox menuBar;
 	private HvlArrangerBox tileArr, layerArr;
-	private HvlButton newButton, openButton, saveButton;
+	private HvlButton newButton, openButton, saveButton, resizeButton;
 	private HvlLabel tileLabel, layerLabel;
 	private HvlExpandableRectTextBox tileTextBox, layerTextBox;
 
@@ -73,6 +73,9 @@ public class HVLevelEditMainForm extends HvlTemplateInteg2DBasic {
 		getTextureLoader().loadResource("TileBox");
 		getTextureLoader().loadResource("Font");
 		getTextureLoader().loadResource("MathFont");
+		getTextureLoader().loadResource("ResizeButton/Off");
+		getTextureLoader().loadResource("ResizeButton/Hover");
+		getTextureLoader().loadResource("ResizeButton/On");
 
 		menuBar = new HvlArrangerBox(0, 0, Display.getWidth(), 96,
 				Display.getHeight(), ArrangementStyle.HORIZONTAL);
@@ -160,7 +163,12 @@ public class HVLevelEditMainForm extends HvlTemplateInteg2DBasic {
 				}
 			}
 		};
-
+		resizeButton = new HvlTextureButton(0, 0, 64, 64, Display.getHeight(), 
+				getTextureLoader().getResource(14), getTextureLoader().getResource(15), getTextureLoader().getResource(16))
+		{
+			
+		};
+		
 		tileArr = new HvlArrangerBox(0, 320, 256, 48, Display.getHeight(),
 				ArrangementStyle.HORIZONTAL);
 		tileArr.setBorderL(8);
@@ -171,16 +179,16 @@ public class HVLevelEditMainForm extends HvlTemplateInteg2DBasic {
 						HvlFontUtil.DEFAULT, 2048, 2048, 112, 144, 18), "tile",
 				Color.black);
 		tileLabel.setScale(0.25f);
-		
-		layerArr = new HvlArrangerBox(0, tileArr.getY() + tileArr.getHeight() + 32, 256, 48, Display.getHeight(),
-				ArrangementStyle.HORIZONTAL);
+
+		layerArr = new HvlArrangerBox(0, tileArr.getY() + tileArr.getHeight()
+				+ 32, 256, 48, Display.getHeight(), ArrangementStyle.HORIZONTAL);
 		layerArr.setBorderL(8);
 		layerArr.setAlign(0.5f);
-		
+
 		layerLabel = new HvlLabel(0, 0, Display.getHeight(),
 				new HvlFontPainter2D(getTextureLoader().getResource(12),
-						HvlFontUtil.DEFAULT, 2048, 2048, 112, 144, 18), "layer",
-				Color.black);
+						HvlFontUtil.DEFAULT, 2048, 2048, 112, 144, 18),
+				"layer", Color.black);
 		layerLabel.setScale(0.25f);
 
 		tileTextBox = new HvlExpandableRectTextBox(0, 0, 256, 48,
@@ -194,7 +202,7 @@ public class HVLevelEditMainForm extends HvlTemplateInteg2DBasic {
 		tileTextBox.setTextScale(0.75f);
 		tileTextBox.setOffsetX(6f);
 		tileTextBox.setTextColor(Color.black);
-		tileTextBox.setMaxCharacters(2);
+		tileTextBox.setMaxCharacters(3);
 
 		layerTextBox = new HvlExpandableRectTextBox(32, tileTextBox.getY()
 				+ tileTextBox.getHeight() + 8, 256, 48, Display.getHeight(),
@@ -209,7 +217,7 @@ public class HVLevelEditMainForm extends HvlTemplateInteg2DBasic {
 		layerTextBox.setOffsetX(6f);
 		layerTextBox.setTextColor(Color.black);
 		layerTextBox.setMaxCharacters(2);
-
+		
 		mainMenu = new HvlMenu() {
 
 		};
@@ -217,6 +225,7 @@ public class HVLevelEditMainForm extends HvlTemplateInteg2DBasic {
 		menuBar.add(newButton);
 		menuBar.add(openButton);
 		menuBar.add(saveButton);
+		menuBar.add(resizeButton);
 		mainMenu.add(tileArr);
 		tileArr.add(tileLabel);
 		tileArr.add(tileTextBox);
@@ -232,7 +241,7 @@ public class HVLevelEditMainForm extends HvlTemplateInteg2DBasic {
 		dimensionUpdate();
 
 		if (tilemap != null) {
-			if (Mouse.isButtonDown(1)) {
+			if (Mouse.isButtonDown(1) || Mouse.isButtonDown(2)) {
 				tilemap.setX(tilemap.getX() + Mouse.getDX());
 				tilemap.setY(tilemap.getY() - Mouse.getDY());
 			} else if (Mouse.isButtonDown(0)) {
@@ -271,13 +280,44 @@ public class HVLevelEditMainForm extends HvlTemplateInteg2DBasic {
 			}
 		}
 
-		if (tilemap != null
-				&& (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) || Keyboard
-						.isKeyDown(Keyboard.KEY_RCONTROL))) {
-			tileSize += (Mouse.getDWheel() / 120) * 2;
-			tileSize = Math.max(Math.min(256, tileSize), 4);
-			tilemap.setTileWidth(tileSize);
-			tilemap.setTileHeight(tileSize);
+		if (tilemap != null) {
+			if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)
+					|| Keyboard.isKeyDown(Keyboard.KEY_RCONTROL)) {
+				tileSize += (Mouse.getDWheel() / 120) * 2;
+				tileSize = Math.max(Math.min(256, tileSize), 4);
+				tilemap.setTileWidth(tileSize);
+				tilemap.setTileHeight(tileSize);
+			} else if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)
+					|| Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)
+					&& !layerTextBox.getText().trim().isEmpty()) {
+				int currentLayer = Integer.parseInt(layerTextBox.getText()
+						.trim());
+
+				currentLayer += Mouse.getDWheel() / 120;
+				if (currentLayer >= tilemap.getLayerCount())
+					currentLayer = 0;
+				if (currentLayer < 0)
+					currentLayer = tilemap.getLayerCount() - 1;
+
+				layerTextBox.setText(currentLayer + "");
+			} else if (!tileTextBox.getText().trim().isEmpty()
+					&& !layerTextBox.getText().trim().isEmpty()) {
+				int currentTile = Integer
+						.parseInt(tileTextBox.getText().trim());
+				int currentLayer = Integer.parseInt(layerTextBox.getText()
+						.trim());
+				
+				currentTile += Mouse.getDWheel() / 120;
+				
+				if (currentTile >= tilemap.getLayer(currentLayer).getInfo().tileWidth
+						* tilemap.getLayer(currentLayer).getInfo().tileHeight)
+					currentTile = -1;
+				if (currentTile < -1)
+					currentTile = (tilemap.getLayer(currentLayer).getInfo().tileWidth
+							* tilemap.getLayer(currentLayer).getInfo().tileHeight) - 1;
+
+				tileTextBox.setText(currentTile + "");
+			}
 		}
 
 		draw(delta);
@@ -294,6 +334,7 @@ public class HVLevelEditMainForm extends HvlTemplateInteg2DBasic {
 		newButton.setHeightInversion(Display.getHeight());
 		openButton.setHeightInversion(Display.getHeight());
 		saveButton.setHeightInversion(Display.getHeight());
+		resizeButton.setHeightInversion(Display.getHeight());
 		tileTextBox.setWidth(320 - tileTextBox.getX() - 32);
 		tileTextBox.setHeightInversion(Display.getHeight());
 		layerTextBox.setWidth(320 - layerTextBox.getX() - 32);
