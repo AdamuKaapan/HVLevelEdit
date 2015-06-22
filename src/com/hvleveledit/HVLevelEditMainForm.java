@@ -170,6 +170,9 @@ public class HVLevelEditMainForm extends HvlTemplateInteg2DBasic {
 			public void onTriggered() {
 				if (tilemap != null) {
 					int[] dims = getNumberPair("Please enter the new dimensions?");
+					
+					if (dims == null) return;
+					
 					for (int i = 0; i < tilemap.getLayerCount(); i++) {
 						tilemap.getLayer(i).resize(dims[0], dims[1]);
 					}
@@ -249,10 +252,17 @@ public class HVLevelEditMainForm extends HvlTemplateInteg2DBasic {
 		sizeUpdate();
 
 		if (tilemap != null) {
-			if (Mouse.isButtonDown(1) || Mouse.isButtonDown(2)) {
+			if ((Mouse.isButtonDown(1) && (Keyboard
+					.isKeyDown(Keyboard.KEY_LCONTROL)
+					|| Keyboard.isKeyDown(Keyboard.KEY_RCONTROL) || Keyboard
+						.isKeyDown(Keyboard.KEY_LSHIFT)
+								|| Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)))
+					|| Mouse.isButtonDown(2)) {
 				tilemap.setX(tilemap.getX() + Mouse.getDX());
 				tilemap.setY(tilemap.getY() - Mouse.getDY());
-			} else if (Mouse.isButtonDown(0)) {
+			}
+			// Right mouse but NOT a ctrl key
+			else if (Mouse.isButtonDown(0) || Mouse.isButtonDown(1)) {
 				int tileX = getMouseTileX();
 				int tileY = getMouseTileY();
 
@@ -271,7 +281,7 @@ public class HVLevelEditMainForm extends HvlTemplateInteg2DBasic {
 									int tileCoord = Integer
 											.parseInt(tileTextBox.getText()
 													.trim());
-									if (tileCoord < 0) {
+									if (tileCoord < 0 || Mouse.isButtonDown(1)) {
 										tilemap.getLayer(layer).setTile(tileX,
 												tileY, null);
 									} else if (tileCoord < tilemap.getLayer(
