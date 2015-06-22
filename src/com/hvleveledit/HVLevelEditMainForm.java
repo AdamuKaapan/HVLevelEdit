@@ -213,17 +213,28 @@ public class HVLevelEditMainForm extends HvlTemplateInteg2DBasic {
 				if (!layerTextBox.getText().trim().isEmpty()) {
 					int layer = Integer.parseInt(layerTextBox.getText().trim());
 					
-					if (tileX >= 0 && tileX < tilemap.getLayer(layer).getMapWidth()
-							&& tileY >= 0 && tileY < tilemap.getLayer(layer).getMapHeight()) {
-						if (!tileTextBox.getText().trim().isEmpty()) {
-							int tileCoord = Integer.parseInt(tileTextBox
-									.getText().trim());
-							if (tileCoord < 0) {
-								tilemap.getLayer(layer).setTile(tileX, tileY, null);
-							} else if (tileCoord < tilemap.getLayer(layer).getInfo().tileWidth
-									* tilemap.getLayer(layer).getInfo().tileHeight) {
-								tilemap.getLayer(layer).setTile(tileX, tileY,
-										new HvlSimpleTile(tileCoord));
+					if (layer < tilemap.getLayerCount()) {
+						if (tileX >= 0
+								&& tileX < tilemap.getLayer(layer)
+										.getMapWidth()
+								&& tileY >= 0
+								&& tileY < tilemap.getLayer(layer)
+										.getMapHeight()) {
+							if (!tileTextBox.getText().trim().isEmpty()) {
+								int tileCoord = Integer.parseInt(tileTextBox
+										.getText().trim());
+								if (tileCoord < 0) {
+									tilemap.getLayer(layer).setTile(tileX,
+											tileY, null);
+								} else if (tileCoord < tilemap.getLayer(layer)
+										.getInfo().tileWidth
+										* tilemap.getLayer(layer).getInfo().tileHeight) {
+									tilemap.getLayer(layer)
+											.setTile(
+													tileX,
+													tileY,
+													new HvlSimpleTile(tileCoord));
+								}
 							}
 						}
 					}
@@ -270,16 +281,20 @@ public class HVLevelEditMainForm extends HvlTemplateInteg2DBasic {
 
 					int layer = Integer.parseInt(layerTextBox.getText().trim());
 
-					if (tileX >= 0
-							&& tileX < tilemap.getLayer(layer).getMapWidth()
-							&& tileY >= 0
-							&& tileY < tilemap.getLayer(layer).getMapHeight()) {
-						HvlPainter2D
-								.hvlDrawQuad(tilemap.getX()
-										+ (tileX * tileSize), tilemap.getY()
-										+ (tileY * tileSize), tileSize,
-										tileSize, getTextureLoader()
-												.getResource(11), Color.white);
+					if (layer < tilemap.getLayerCount()) {
+
+						if (tileX >= 0
+								&& tileX < tilemap.getLayer(layer)
+										.getMapWidth()
+								&& tileY >= 0
+								&& tileY < tilemap.getLayer(layer)
+										.getMapHeight()) {
+							HvlPainter2D.hvlDrawQuad(tilemap.getX()
+									+ (tileX * tileSize), tilemap.getY()
+									+ (tileY * tileSize), tileSize, tileSize,
+									getTextureLoader().getResource(11),
+									Color.white);
+						}
 					}
 				}
 			}
@@ -289,8 +304,10 @@ public class HVLevelEditMainForm extends HvlTemplateInteg2DBasic {
 		if (tilemap != null) {
 			if (!layerTextBox.getText().trim().isEmpty()) {
 				int layer = Integer.parseInt(layerTextBox.getText().trim());
-				HvlPainter2D.hvlDrawQuad(32, 32, 256, 256,
-						tilemap.getLayer(layer).getInfo().texture);
+				if (layer < tilemap.getLayerCount()) {
+					HvlPainter2D.hvlDrawQuad(32, 32, 256, 256, tilemap
+							.getLayer(layer).getInfo().texture);
+				}
 			}
 		}
 
