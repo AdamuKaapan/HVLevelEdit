@@ -32,12 +32,12 @@ import com.osreboot.ridhvl.menu.component.collection.HvlTiledRectDrawable;
 import com.osreboot.ridhvl.painter.painter2d.HvlFontPainter2D;
 import com.osreboot.ridhvl.painter.painter2d.HvlPainter2D;
 import com.osreboot.ridhvl.painter.painter2d.HvlTiledRect;
-import com.osreboot.ridhvl.template.HvlTemplateInteg2DBasic;
+import com.osreboot.ridhvl.template.HvlTemplateInteg2D;
 import com.osreboot.ridhvl.tile.HvlLayeredTileMap;
 import com.osreboot.ridhvl.tile.HvlTileMap;
 import com.osreboot.ridhvl.tile.collection.HvlSimpleTile;
 
-public class HVLevelEditMainForm extends HvlTemplateInteg2DBasic {
+public class HVLevelEditMainForm extends HvlTemplateInteg2D {
 	private HvlMenu mainMenu;
 	private HvlArrangerBox menuBar;
 	private HvlArrangerBox tileArr, layerArr;
@@ -240,16 +240,16 @@ public class HVLevelEditMainForm extends HvlTemplateInteg2DBasic {
 
 		};
 		mainMenu.add(menuBar);
-		menuBar.addChild(newButton);
-		menuBar.addChild(openButton);
-		menuBar.addChild(saveButton);
-		menuBar.addChild(resizeButton);
+		menuBar.add(newButton);
+		menuBar.add(openButton);
+		menuBar.add(saveButton);
+		menuBar.add(resizeButton);
 		mainMenu.add(tileArr);
-		tileArr.addChild(tileLabel);
-		tileArr.addChild(tileTextBox);
+		tileArr.add(tileLabel);
+		tileArr.add(tileTextBox);
 		mainMenu.add(layerArr);
-		layerArr.addChild(layerLabel);
-		layerArr.addChild(layerTextBox);
+		layerArr.add(layerLabel);
+		layerArr.add(layerTextBox);
 
 		HvlMenu.setCurrent(mainMenu);
 	}
