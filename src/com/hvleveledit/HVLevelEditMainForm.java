@@ -58,8 +58,7 @@ public class HVLevelEditMainForm extends HvlTemplateInteg2D {
 
 	private int tileSize;
 
-	public HVLevelEditMainForm(int frameRateArg, int width, int height,
-			String title, HvlDisplayMode displayModeArg) {
+	public HVLevelEditMainForm(int frameRateArg, int width, int height, String title, HvlDisplayMode displayModeArg) {
 		super(frameRateArg, width, height, title, 30, 5, displayModeArg);
 	}
 
@@ -77,7 +76,7 @@ public class HVLevelEditMainForm extends HvlTemplateInteg2D {
 		getTextureLoader().loadResource("OpenButton/On");
 		getTextureLoader().loadResource("SaveButton/Off");
 		getTextureLoader().loadResource("SaveButton/Hover");
-		getTextureLoader().loadResource("SaveButton/On");//10
+		getTextureLoader().loadResource("SaveButton/On");// 10
 		getTextureLoader().loadResource("TileBox");
 		getTextureLoader().loadResource("Font");
 		getTextureLoader().loadResource("MathFont");
@@ -87,7 +86,7 @@ public class HVLevelEditMainForm extends HvlTemplateInteg2D {
 		getTextureLoader().loadResource("ScrollButtons/ButtonHoverD");
 		getTextureLoader().loadResource("ScrollButtons/ButtonHoverU");
 		getTextureLoader().loadResource("ScrollButtons/ButtonOffD");
-		getTextureLoader().loadResource("ScrollButtons/ButtonOffU");//20
+		getTextureLoader().loadResource("ScrollButtons/ButtonOffU");// 20
 		getTextureLoader().loadResource("ScrollButtons/ButtonOnD");
 		getTextureLoader().loadResource("ScrollButtons/ButtonOnU");
 		getTextureLoader().loadResource("ButtonOn");
@@ -97,22 +96,16 @@ public class HVLevelEditMainForm extends HvlTemplateInteg2D {
 		font = new HvlFontPainter2D(getTextureLoader().getResource(12), HvlFontUtil.DEFAULT, 2048, 2048, 112, 144, 18);
 		mathFont = new HvlFontPainter2D(getTextureLoader().getResource(13), HvlFontUtil.MATHEMATICS, 256, 256, 32, 64, 8);
 
-		menuBar = new HvlArrangerBox(0, 0, Display.getWidth(), 96,
-				ArrangementStyle.HORIZONTAL);
+		menuBar = new HvlArrangerBox(0, 0, Display.getWidth(), 96, ArrangementStyle.HORIZONTAL);
 		menuBar.setAlign(0.5f);
 		menuBar.setBorderL(16f);
 
-		menuBarBackground = new HvlTiledRect(getTextureLoader().getResource(1),
-				0.0625f, 0.9375f, 0.0625f, 0.9375f, 0, 0, 0,
-				menuBar.getHeight(), 8, 8);
-		tilemapBackground = new HvlTiledRect(getTextureLoader().getResource(1),
-				0.0625f, 0.9375f, 0.0625f, 0.9375f, 0, 0, 320,
-				Display.getHeight() - menuBar.getHeight(), 8, 8);
+		menuBarBackground = new HvlTiledRect(getTextureLoader().getResource(1), 0.0625f, 0.9375f, 0.0625f, 0.9375f, 0, 0, 0, menuBar.getHeight(), 8, 8);
+		tilemapBackground = new HvlTiledRect(getTextureLoader().getResource(1), 0.0625f, 0.9375f, 0.0625f, 0.9375f, 0, 0, 320, Display.getHeight()
+				- menuBar.getHeight(), 8, 8);
 
-		newButton = new HvlButton(0, 0, 64, 64, new HvlTextureDrawable(
-				getTextureLoader().getResource(2)), new HvlTextureDrawable(
-						getTextureLoader().getResource(3)), new HvlTextureDrawable(
-								getTextureLoader().getResource(4))) {
+		newButton = new HvlButton(0, 0, 64, 64, new HvlTextureDrawable(getTextureLoader().getResource(2)), new HvlTextureDrawable(getTextureLoader()
+				.getResource(3)), new HvlTextureDrawable(getTextureLoader().getResource(4))) {
 			@Override
 			public void onTriggered() {
 
@@ -135,20 +128,17 @@ public class HVLevelEditMainForm extends HvlTemplateInteg2D {
 				HvlTileMap[] layers = new HvlTileMap[layerCount];
 
 				for (int i = 0; i < layers.length; i++) {
-					layers[i] = new HvlTileMap(t, tileDims[0], tileDims[1],
-							mapDims[0], mapDims[1], 0, 0, 64, 64);
+					layers[i] = new HvlTileMap(t, tileDims[0], tileDims[1], mapDims[0], mapDims[1], 0, 0, 64, 64);
 				}
 
 				tilemap = new HvlLayeredTileMap(0, 0, 64, 64, layers);
 				tilemap.getLayer(0).fill(new HvlSimpleTile(0));
 				populateLayerList(layers.length);
-				
+
 			}
 		};
-		openButton = new HvlButton(0, 0, 64, 64, new HvlTextureDrawable(
-				getTextureLoader().getResource(5)), new HvlTextureDrawable(
-						getTextureLoader().getResource(6)), new HvlTextureDrawable(
-								getTextureLoader().getResource(7))) {
+		openButton = new HvlButton(0, 0, 64, 64, new HvlTextureDrawable(getTextureLoader().getResource(5)), new HvlTextureDrawable(getTextureLoader()
+				.getResource(6)), new HvlTextureDrawable(getTextureLoader().getResource(7))) {
 			@Override
 			public void onTriggered() {
 				String fileText = getFileText();
@@ -163,10 +153,8 @@ public class HVLevelEditMainForm extends HvlTemplateInteg2D {
 				populateLayerList(tilemap.getLayerCount());
 			}
 		};
-		saveButton = new HvlButton(0, 0, 64, 64, new HvlTextureDrawable(
-				getTextureLoader().getResource(8)), new HvlTextureDrawable(
-						getTextureLoader().getResource(9)), new HvlTextureDrawable(
-								getTextureLoader().getResource(10))) {
+		saveButton = new HvlButton(0, 0, 64, 64, new HvlTextureDrawable(getTextureLoader().getResource(8)), new HvlTextureDrawable(getTextureLoader()
+				.getResource(9)), new HvlTextureDrawable(getTextureLoader().getResource(10))) {
 			@Override
 			public void onTriggered() {
 				if (tilemap == null)
@@ -180,8 +168,7 @@ public class HVLevelEditMainForm extends HvlTemplateInteg2D {
 					return;
 
 				try {
-					BufferedWriter writer = new BufferedWriter(
-							new FileWriter(f));
+					BufferedWriter writer = new BufferedWriter(new FileWriter(f));
 					writer.write(HvlLayeredTileMap.save(tilemap));
 					writer.close();
 				} catch (IOException e) {
@@ -189,10 +176,8 @@ public class HVLevelEditMainForm extends HvlTemplateInteg2D {
 				}
 			}
 		};
-		resizeButton = new HvlButton(0, 0, 64, 64, new HvlTextureDrawable(
-				getTextureLoader().getResource(14)), new HvlTextureDrawable(
-						getTextureLoader().getResource(15)), new HvlTextureDrawable(
-								getTextureLoader().getResource(16))) {
+		resizeButton = new HvlButton(0, 0, 64, 64, new HvlTextureDrawable(getTextureLoader().getResource(14)), new HvlTextureDrawable(getTextureLoader()
+				.getResource(15)), new HvlTextureDrawable(getTextureLoader().getResource(16))) {
 			@Override
 			public void onTriggered() {
 				if (tilemap != null) {
@@ -208,46 +193,40 @@ public class HVLevelEditMainForm extends HvlTemplateInteg2D {
 			}
 		};
 
-		tileArr = new HvlArrangerBox(0, 320, 256, 48,
-				ArrangementStyle.HORIZONTAL);
+		tileArr = new HvlArrangerBox(0, 320, 256, 48, ArrangementStyle.HORIZONTAL);
 		tileArr.setBorderL(8);
 		tileArr.setAlign(0.5f);
 
-		tileLabel = new HvlLabel(0, 0, font, "tile",
-				Color.black);
+		tileLabel = new HvlLabel(0, 0, font, "tile", Color.black);
 		tileLabel.setScale(0.25f);
 
 		layerArr = new HvlArrangerBox(16, tileArr.getY() + tileArr.getHeight() + 32, 256, 48, ArrangementStyle.HORIZONTAL);
 		layerArr.setBorderL(8);
 		layerArr.setAlign(0.5f);
 
-		tileTextBox = new HvlTextBox(0, 0, 256, 48, "-1",
-				new HvlTiledRectDrawable(new HvlTiledRect(getTextureLoader()
-						.getResource(1), 0.0625f, 0.9375f, 0.0625f, 0.9375f, 0,
-						0, 0, 0, 4, 4)), new HvlTiledRectDrawable(
-								new HvlTiledRect(getTextureLoader().getResource(1),
-										0.0625f, 0.9375f, 0.0625f, 0.9375f, 0, 0, 0, 0,
-										4, 4)), mathFont);
+		tileTextBox = new HvlTextBox(0, 0, 256, 48, "-1", new HvlTiledRectDrawable(new HvlTiledRect(getTextureLoader().getResource(1), 0.0625f, 0.9375f,
+				0.0625f, 0.9375f, 0, 0, 0, 0, 4, 4)), new HvlTiledRectDrawable(new HvlTiledRect(getTextureLoader().getResource(1), 0.0625f, 0.9375f, 0.0625f,
+				0.9375f, 0, 0, 0, 0, 4, 4)), mathFont);
 		tileTextBox.setTextScale(0.75f);
 		tileTextBox.setOffsetX(6f);
 		tileTextBox.setTextColor(Color.black);
 		tileTextBox.setMaxCharacters(3);
 
-
-		layerSlider = new HvlSlider(0, 0, 32, 256, SliderDirection.VERTICAL, 32, 32, 0, new HvlTextureDrawable(getTextureLoader().getResource(24)), new HvlTextureDrawable(getTextureLoader().getResource(24)));
+		layerSlider = new HvlSlider(0, 0, 32, 256, SliderDirection.VERTICAL, 32, 32, 0, new HvlTextureDrawable(getTextureLoader().getResource(24)),
+				new HvlTextureDrawable(getTextureLoader().getResource(24)));
 		layerSlider.setSnapInterval(0.1f);
 		layerSlider.setHandleStartOffset(16);
 		layerSlider.setHandleEndOffset(16);
-		layerList = new HvlListBox(0, 0, 256, 128, layerSlider, 
-				new HvlButton(0, 0, 32, 32, new HvlTextureDrawable(getTextureLoader().getResource(20)), new HvlTextureDrawable(getTextureLoader().getResource(22))), 
-				new HvlButton(0, 0, 32, 32, new HvlTextureDrawable(getTextureLoader().getResource(19)), new HvlTextureDrawable(getTextureLoader().getResource(21))), 
-				font, new HvlTextureDrawable(getTextureLoader().getResource(24)), new HvlTextureDrawable(getTextureLoader().getResource(25)), 32, 8);
+		layerList = new HvlListBox(0, 0, 256, 128, layerSlider, new HvlButton(0, 0, 32, 32, new HvlTextureDrawable(getTextureLoader().getResource(20)),
+				new HvlTextureDrawable(getTextureLoader().getResource(22))), new HvlButton(0, 0, 32, 32, new HvlTextureDrawable(getTextureLoader().getResource(
+				19)), new HvlTextureDrawable(getTextureLoader().getResource(21))), font, new HvlTextureDrawable(getTextureLoader().getResource(24)),
+				new HvlTextureDrawable(getTextureLoader().getResource(25)), 32, 8);
 		layerList.setTextScale(0.2f);
 		layerList.setTextColor(Color.black);
 		layerArr.add(layerList);
 
 		mainMenu = new HvlMenu() {
-			
+
 		};
 		mainMenu.add(menuBar);
 		menuBar.add(newButton);
@@ -264,50 +243,38 @@ public class HVLevelEditMainForm extends HvlTemplateInteg2D {
 
 	@Override
 	public void update(float delta) {
+		System.out.println(Mouse.getX());
 		sizeUpdate();
 
 		if (tilemap != null) {
-			if ((Mouse.isButtonDown(1) && (Keyboard
-					.isKeyDown(Keyboard.KEY_LCONTROL)
-					|| Keyboard.isKeyDown(Keyboard.KEY_RCONTROL)
-					|| Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard
-					.isKeyDown(Keyboard.KEY_RSHIFT)))
+			if ((Mouse.isButtonDown(1) && (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) || Keyboard.isKeyDown(Keyboard.KEY_RCONTROL)
+					|| Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)))
 					|| Mouse.isButtonDown(2)) {
 				tilemap.setX(tilemap.getX() + Mouse.getDX());
 				tilemap.setY(tilemap.getY() - Mouse.getDY());
 			}
 			// Right mouse but NOT a ctrl key
 			else if (Mouse.isButtonDown(0) || Mouse.isButtonDown(1)) {
-				int tileX = getMouseTileX();
-				int tileY = getMouseTileY();
+				if (Mouse.getX() > tilemapBackground.getTotalWidth() && Mouse.getY() < Display.getHeight() - menuBarBackground.getTotalHeight()) {
+					int tileX = getMouseTileX();
+					int tileY = getMouseTileY();
 
-				if (layerList.getSelectedIndex() != -1) {
-					int layer = layerList.getSelectedIndex();
+					if (layerList.getSelectedIndex() != -1) {
+						int layer = layerList.getSelectedIndex();
 
-					if (layer < tilemap.getLayerCount()) {
-						if (tileX >= 0
-								&& tileX < tilemap.getLayer(layer)
-								.getMapWidth()
-								&& tileY >= 0
-								&& tileY < tilemap.getLayer(layer)
-								.getMapHeight()) {
-							if (!tileTextBox.getText().trim().isEmpty()) {
-								try {
-									int tileCoord = Integer
-											.parseInt(tileTextBox.getText()
-													.trim());
-									if (tileCoord < 0 || Mouse.isButtonDown(1)) {
-										tilemap.getLayer(layer).setTile(tileX,
-												tileY, null);
-									} else if (tileCoord < tilemap.getLayer(
-											layer).getInfo().tileWidth
-											* tilemap.getLayer(layer).getInfo().tileHeight) {
-										tilemap.getLayer(layer).setTile(tileX,
-												tileY,
-												new HvlSimpleTile(tileCoord));
+						if (layer < tilemap.getLayerCount()) {
+							if (tileX >= 0 && tileX < tilemap.getLayer(layer).getMapWidth() && tileY >= 0 && tileY < tilemap.getLayer(layer).getMapHeight()) {
+								if (!tileTextBox.getText().trim().isEmpty()) {
+									try {
+										int tileCoord = Integer.parseInt(tileTextBox.getText().trim());
+										if (tileCoord < 0 || Mouse.isButtonDown(1)) {
+											tilemap.getLayer(layer).setTile(tileX, tileY, null);
+										} else if (tileCoord < tilemap.getLayer(layer).getInfo().tileWidth * tilemap.getLayer(layer).getInfo().tileHeight) {
+											tilemap.getLayer(layer).setTile(tileX, tileY, new HvlSimpleTile(tileCoord));
+										}
+									} catch (NumberFormatException e) {
+
 									}
-								} catch (NumberFormatException e) {
-
 								}
 							}
 						}
@@ -317,15 +284,12 @@ public class HVLevelEditMainForm extends HvlTemplateInteg2D {
 		}
 
 		if (tilemap != null) {
-			if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)
-					|| Keyboard.isKeyDown(Keyboard.KEY_RCONTROL)) {
+			if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) || Keyboard.isKeyDown(Keyboard.KEY_RCONTROL)) {
 				tileSize += (Mouse.getDWheel() / 120) * 2;
 				tileSize = Math.max(Math.min(256, tileSize), 4);
 				tilemap.setTileWidth(tileSize);
 				tilemap.setTileHeight(tileSize);
-			} else if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)
-					|| Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)
-					&& layerList.getSelectedIndex() != -1) {
+			} else if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT) && layerList.getSelectedIndex() != -1) {
 				int currentLayer = layerList.getSelectedIndex();
 
 				currentLayer -= Mouse.getDWheel() / 120;
@@ -335,21 +299,17 @@ public class HVLevelEditMainForm extends HvlTemplateInteg2D {
 					currentLayer = tilemap.getLayerCount() - 1;
 
 				layerList.setSelectedIndex(currentLayer);
-			} else if (!tileTextBox.getText().trim().isEmpty()
-					&& layerList.getSelectedIndex() != -1) {
+			} else if (!tileTextBox.getText().trim().isEmpty() && layerList.getSelectedIndex() != -1) {
 				try {
-					int currentTile = Integer.parseInt(tileTextBox.getText()
-							.trim());
+					int currentTile = Integer.parseInt(tileTextBox.getText().trim());
 					int currentLayer = layerList.getSelectedIndex();
 
 					currentTile -= Mouse.getDWheel() / 120;
 
-					if (currentTile >= tilemap.getLayer(currentLayer).getInfo().tileWidth
-							* tilemap.getLayer(currentLayer).getInfo().tileHeight)
+					if (currentTile >= tilemap.getLayer(currentLayer).getInfo().tileWidth * tilemap.getLayer(currentLayer).getInfo().tileHeight)
 						currentTile = -1;
 					if (currentTile < -1)
-						currentTile = (tilemap.getLayer(currentLayer).getInfo().tileWidth * tilemap
-								.getLayer(currentLayer).getInfo().tileHeight) - 1;
+						currentTile = (tilemap.getLayer(currentLayer).getInfo().tileWidth * tilemap.getLayer(currentLayer).getInfo().tileHeight) - 1;
 
 					tileTextBox.setText(currentTile + "");
 				} catch (NumberFormatException e) {
@@ -361,24 +321,25 @@ public class HVLevelEditMainForm extends HvlTemplateInteg2D {
 		draw(delta);
 	}
 
-	private void populateLayerList(int layerCount){
-		while(layerList.getItemCount() > 0) layerList.removeItem(layerList.getItem(0));
-		for(int i = layerCount - 1; i >= 0; i--) layerList.addItem("layer " + i);
+	private void populateLayerList(int layerCount) {
+		while (layerList.getItemCount() > 0)
+			layerList.removeItem(layerList.getItem(0));
+		for (int i = layerCount - 1; i >= 0; i--)
+			layerList.addItem("layer " + i);
 		layerList.setSelectedIndex(0);
 	}
-	
+
 	private void sizeUpdate() {
 		menuBar.setY(Display.getHeight() - menuBar.getHeight());
 		menuBar.setWidth(Display.getWidth());
 		menuBarBackground.setY(menuBar.getY());
 		menuBarBackground.setTotalWidth(menuBar.getWidth());
-		tilemapBackground.setTotalHeight(Display.getHeight()
-				- menuBar.getHeight());
+		tilemapBackground.setTotalHeight(Display.getHeight() - menuBar.getHeight());
 		tileTextBox.setWidth(320 - tileTextBox.getX() - 32);
-		
+
 		layerArr.setHeight(Display.getHeight() - (tileArr.getY() + tileArr.getHeight() + 32) - menuBar.getHeight() - 32);
 		layerList.setHeight(layerArr.getHeight());
-		layerList.setMaxVisibleItems((int)layerList.getHeight()/(int)layerList.getItemHeight());
+		layerList.setMaxVisibleItems((int) layerList.getHeight() / (int) layerList.getItemHeight());
 	}
 
 	private void draw(float delta) {
@@ -395,17 +356,9 @@ public class HVLevelEditMainForm extends HvlTemplateInteg2D {
 
 					if (layer < tilemap.getLayerCount()) {
 
-						if (tileX >= 0
-								&& tileX < tilemap.getLayer(layer)
-								.getMapWidth()
-								&& tileY >= 0
-								&& tileY < tilemap.getLayer(layer)
-								.getMapHeight()) {
-							HvlPainter2D.hvlDrawQuad(tilemap.getX()
-									+ (tileX * tileSize), tilemap.getY()
-									+ (tileY * tileSize), tileSize, tileSize,
-									getTextureLoader().getResource(11),
-									Color.white);
+						if (tileX >= 0 && tileX < tilemap.getLayer(layer).getMapWidth() && tileY >= 0 && tileY < tilemap.getLayer(layer).getMapHeight()) {
+							HvlPainter2D.hvlDrawQuad(tilemap.getX() + (tileX * tileSize), tilemap.getY() + (tileY * tileSize), tileSize, tileSize,
+									getTextureLoader().getResource(11), Color.white);
 						}
 					}
 				}
@@ -417,29 +370,19 @@ public class HVLevelEditMainForm extends HvlTemplateInteg2D {
 			if (layerList.getSelectedIndex() != -1) {
 				int layer = layerList.getSelectedIndex();
 				if (layer < tilemap.getLayerCount()) {
-					HvlPainter2D.hvlDrawQuad(32, 32, 256, 256, tilemap
-							.getLayer(layer).getInfo().texture);
+					HvlPainter2D.hvlDrawQuad(32, 32, 256, 256, tilemap.getLayer(layer).getInfo().texture);
 
 					int miniX = getMiniMouseTileX();
 					int miniY = getMiniMouseTileY();
 
-					if (miniX >= 0
-							&& miniX < tilemap.getLayer(layer).getInfo().tileWidth
-							&& miniY >= 0
-							&& miniY < tilemap.getLayer(layer).getInfo().tileHeight) {
+					if (miniX >= 0 && miniX < tilemap.getLayer(layer).getInfo().tileWidth && miniY >= 0 && miniY < tilemap.getLayer(layer).getInfo().tileHeight) {
 						float miniW = 256 / tilemap.getLayer(layer).getInfo().tileWidth;
 						float miniH = 256 / tilemap.getLayer(layer).getInfo().tileHeight;
 
-						HvlPainter2D
-						.hvlDrawQuad(32 + (miniX * miniW),
-								32 + (miniY * miniH), miniW, miniH,
-								getTextureLoader().getResource(11),
-								Color.white);
+						HvlPainter2D.hvlDrawQuad(32 + (miniX * miniW), 32 + (miniY * miniH), miniW, miniH, getTextureLoader().getResource(11), Color.white);
 
 						if (Mouse.isButtonDown(0)) {
-							int selectedTile = miniY
-									* tilemap.getLayer(layer).getInfo().tileHeight
-									+ miniX;
+							int selectedTile = miniY * tilemap.getLayer(layer).getInfo().tileHeight + miniX;
 							tileTextBox.setText(selectedTile + "");
 						}
 					}
@@ -447,21 +390,14 @@ public class HVLevelEditMainForm extends HvlTemplateInteg2D {
 					// Draw the ACTUAL tile that is selected as well
 					if (!tileTextBox.getText().trim().isEmpty()) {
 						try {
-							int tile = Integer.parseInt(tileTextBox.getText()
-									.trim());
+							int tile = Integer.parseInt(tileTextBox.getText().trim());
 							if (tile >= 0) {
-								int tileX = tile
-										% tilemap.getLayer(layer).getInfo().tileWidth;
-								int tileY = tile
-										/ tilemap.getLayer(layer).getInfo().tileWidth;
-								float miniW = 256 / tilemap.getLayer(layer)
-										.getInfo().tileWidth;
-								float miniH = 256 / tilemap.getLayer(layer)
-										.getInfo().tileHeight;
+								int tileX = tile % tilemap.getLayer(layer).getInfo().tileWidth;
+								int tileY = tile / tilemap.getLayer(layer).getInfo().tileWidth;
+								float miniW = 256 / tilemap.getLayer(layer).getInfo().tileWidth;
+								float miniH = 256 / tilemap.getLayer(layer).getInfo().tileHeight;
 
-								HvlPainter2D.hvlDrawQuad(32 + (tileX * miniW),
-										32 + (tileY * miniH), miniW, miniH,
-										getTextureLoader().getResource(11),
+								HvlPainter2D.hvlDrawQuad(32 + (tileX * miniW), 32 + (tileY * miniH), miniW, miniH, getTextureLoader().getResource(11),
 										Color.white);
 							}
 						} catch (NumberFormatException e) {
@@ -489,14 +425,12 @@ public class HVLevelEditMainForm extends HvlTemplateInteg2D {
 			try {
 				toReturn = Integer.parseInt(input);
 			} catch (NumberFormatException e) {
-				JOptionPane.showMessageDialog(null,
-						"That's not a valid number.");
+				JOptionPane.showMessageDialog(null, "That's not a valid number.");
 				continue;
 			}
 
 			if (toReturn < 0) {
-				JOptionPane.showMessageDialog(null,
-						"Please enter a positive number.");
+				JOptionPane.showMessageDialog(null, "Please enter a positive number.");
 				continue;
 			}
 
@@ -528,8 +462,7 @@ public class HVLevelEditMainForm extends HvlTemplateInteg2D {
 				}
 				reader.close();
 			} catch (IOException e) {
-				JOptionPane.showMessageDialog(null,
-						"Something went wrong... derp?");
+				JOptionPane.showMessageDialog(null, "Something went wrong... derp?");
 				continue;
 			}
 
@@ -553,8 +486,7 @@ public class HVLevelEditMainForm extends HvlTemplateInteg2D {
 				BufferedImage img = ImageIO.read(f);
 				toReturn = BufferedImageUtil.getTexture("tilemap", img);
 			} catch (IOException e) {
-				JOptionPane.showMessageDialog(null,
-						"Something went wrong... derp?");
+				JOptionPane.showMessageDialog(null, "Something went wrong... derp?");
 				continue;
 			}
 
@@ -577,8 +509,7 @@ public class HVLevelEditMainForm extends HvlTemplateInteg2D {
 
 			String[] split = input.split(",");
 			if (split.length != 2) {
-				JOptionPane.showMessageDialog(null,
-						"Enter two integers separated by a comma.");
+				JOptionPane.showMessageDialog(null, "Enter two integers separated by a comma.");
 				continue;
 			}
 
@@ -588,14 +519,12 @@ public class HVLevelEditMainForm extends HvlTemplateInteg2D {
 				toReturn[0] = Integer.parseInt(split[0].trim());
 				toReturn[1] = Integer.parseInt(split[1].trim());
 			} catch (NumberFormatException e) {
-				JOptionPane.showMessageDialog(null,
-						"You've got an invalid number there somewhere.");
+				JOptionPane.showMessageDialog(null, "You've got an invalid number there somewhere.");
 				continue;
 			}
 
 			if (toReturn[0] < 0 || toReturn[1] < 0) {
-				JOptionPane.showMessageDialog(null,
-						"Please enter positive integers...");
+				JOptionPane.showMessageDialog(null, "Please enter positive integers...");
 				continue;
 			}
 
