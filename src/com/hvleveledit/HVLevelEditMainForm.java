@@ -243,7 +243,6 @@ public class HVLevelEditMainForm extends HvlTemplateInteg2D {
 
 	@Override
 	public void update(float delta) {
-		System.out.println(Mouse.getX());
 		sizeUpdate();
 
 		if (tilemap != null) {
