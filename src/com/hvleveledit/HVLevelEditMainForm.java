@@ -43,11 +43,11 @@ import com.osreboot.ridhvl.tile.collection.HvlSimpleTile;
 public class HVLevelEditMainForm extends HvlTemplateInteg2D {
 	private HvlMenu mainMenu;
 	private HvlArrangerBox menuBar;
-	private HvlArrangerBox tileArr, layerArr;
+	private HvlArrangerBox tileArr, layerArr, transparencyArr;
 	private HvlButton newButton, openButton, saveButton, resizeButton;
-	private HvlLabel tileLabel;
+	private HvlLabel tileLabel, transparencyLabel;
 	private HvlTextBox tileTextBox;
-	private HvlSlider layerSlider;
+	private HvlSlider layerSlider, transparencySlider;
 	private HvlListBox layerList;
 
 	private HvlFontPainter2D font, mathFont;
@@ -60,7 +60,7 @@ public class HVLevelEditMainForm extends HvlTemplateInteg2D {
 
 	public HVLevelEditMainForm(int frameRateArg, int width, int height,
 			String title, HvlDisplayMode displayModeArg) {
-		super(frameRateArg, width, height, title, 30, 5, displayModeArg);
+		super(frameRateArg, width, height, title, 35, 5, displayModeArg);
 	}
 
 	@Override
@@ -93,6 +93,12 @@ public class HVLevelEditMainForm extends HvlTemplateInteg2D {
 		getTextureLoader().loadResource("ButtonOn");
 		getTextureLoader().loadResource("ButtonOff");
 		getTextureLoader().loadResource("ButtonHover");
+		getTextureLoader().loadResource("ScrollButtons/ButtonHoverL");
+		getTextureLoader().loadResource("ScrollButtons/ButtonHoverR");
+		getTextureLoader().loadResource("ScrollButtons/ButtonOffL");
+		getTextureLoader().loadResource("ScrollButtons/ButtonOffR");
+		getTextureLoader().loadResource("ScrollButtons/ButtonOnL");//30
+		getTextureLoader().loadResource("ScrollButtons/ButtonOnR");
 
 		font = new HvlFontPainter2D(getTextureLoader().getResource(12), HvlFontUtil.DEFAULT, 2048, 2048, 112, 144, 18);
 		mathFont = new HvlFontPainter2D(getTextureLoader().getResource(13), HvlFontUtil.MATHEMATICS, 256, 256, 32, 64, 8);
@@ -234,17 +240,36 @@ public class HVLevelEditMainForm extends HvlTemplateInteg2D {
 		tileTextBox.setMaxCharacters(3);
 
 
-		layerSlider = new HvlSlider(0, 0, 32, 256, SliderDirection.VERTICAL, 32, 32, 0, new HvlTextureDrawable(getTextureLoader().getResource(24)), new HvlTextureDrawable(getTextureLoader().getResource(24)));
+		layerSlider = new HvlSlider(0, 0, 32, 256, SliderDirection.VERTICAL, 32, 32, 0, new HvlTextureDrawable(getTextureLoader().getResource(24)), new HvlTextureDrawable(getTextureLoader().getResource(25)));
 		layerSlider.setSnapInterval(0.1f);
 		layerSlider.setHandleStartOffset(16);
 		layerSlider.setHandleEndOffset(16);
 		layerList = new HvlListBox(0, 0, 256, 128, layerSlider, 
 				new HvlButton(0, 0, 32, 32, new HvlTextureDrawable(getTextureLoader().getResource(20)), new HvlTextureDrawable(getTextureLoader().getResource(22))), 
 				new HvlButton(0, 0, 32, 32, new HvlTextureDrawable(getTextureLoader().getResource(19)), new HvlTextureDrawable(getTextureLoader().getResource(21))), 
-				font, new HvlTextureDrawable(getTextureLoader().getResource(24)), new HvlTextureDrawable(getTextureLoader().getResource(25)), 32, 8);
+				font, new HvlTextureDrawable(getTextureLoader().getResource(24)), new HvlTextureDrawable(getTextureLoader().getResource(25)), 32, 8){
+			@Override
+			public void onSelectionChanged(int indexArg, Object selArg){
+				if(tilemap != null){
+					transparencySlider.setValue(tilemap.getLayer(indexArg).getOpacity());
+				}
+			}
+		};
 		layerList.setTextScale(0.2f);
 		layerList.setTextColor(Color.black);
 		layerArr.add(layerList);
+		
+		transparencySlider = new HvlSlider(0, 0, 256, 32, SliderDirection.HORIZONTAL, 32, 32, 0, new HvlTextureDrawable(getTextureLoader().getResource(24)), new HvlTextureDrawable(getTextureLoader().getResource(25)));
+		transparencySlider.setSnapInterval(0.01f);
+		transparencySlider.setHandleStartOffset(16);
+		transparencySlider.setHandleEndOffset(16);
+		
+		transparencyLabel = new HvlLabel(0, 0, font, "opacity", Color.black);
+		transparencyLabel.setScale(0.25f);
+		
+		transparencyArr = new HvlArrangerBox(0, 0, 512, 96, ArrangementStyle.HORIZONTAL);
+		transparencyArr.setAlign(0.5f);
+		transparencyArr.setBorderL(16f);
 
 		mainMenu = new HvlMenu() {
 			
@@ -258,6 +283,10 @@ public class HVLevelEditMainForm extends HvlTemplateInteg2D {
 		tileArr.add(tileLabel);
 		tileArr.add(tileTextBox);
 		mainMenu.add(layerArr);
+		
+		transparencyArr.add(transparencyLabel);
+		transparencyArr.add(transparencySlider);
+		mainMenu.add(transparencyArr);
 
 		HvlMenu.setCurrent(mainMenu);
 	}
@@ -266,7 +295,13 @@ public class HVLevelEditMainForm extends HvlTemplateInteg2D {
 	public void update(float delta) {
 		sizeUpdate();
 
+		transparencySlider.setEnabled(layerList.getSelectedIndex() != -1);
+		transparencySlider.setVisible(layerList.getSelectedIndex() != -1);
+		transparencyLabel.setVisible(layerList.getSelectedIndex() != -1);
+		
 		if (tilemap != null) {
+			tilemap.getLayer(layerList.getSelectedIndex()).setOpacity(transparencySlider.getValue());
+			
 			if ((Mouse.isButtonDown(1) && (Keyboard
 					.isKeyDown(Keyboard.KEY_LCONTROL)
 					|| Keyboard.isKeyDown(Keyboard.KEY_RCONTROL)
@@ -379,6 +414,9 @@ public class HVLevelEditMainForm extends HvlTemplateInteg2D {
 		layerArr.setHeight(Display.getHeight() - (tileArr.getY() + tileArr.getHeight() + 32) - menuBar.getHeight() - 32);
 		layerList.setHeight(layerArr.getHeight());
 		layerList.setMaxVisibleItems((int)layerList.getHeight()/(int)layerList.getItemHeight());
+		
+		transparencyArr.setY(Display.getHeight() - menuBar.getHeight());
+		transparencyArr.setX(Display.getWidth() - transparencyArr.getWidth());
 	}
 
 	private void draw(float delta) {
