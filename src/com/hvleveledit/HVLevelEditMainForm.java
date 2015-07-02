@@ -32,6 +32,7 @@ import com.osreboot.ridhvl.menu.component.HvlSlider.SliderDirection;
 import com.osreboot.ridhvl.menu.component.HvlTextBox;
 import com.osreboot.ridhvl.menu.component.collection.HvlTextureDrawable;
 import com.osreboot.ridhvl.menu.component.collection.HvlTiledRectDrawable;
+import com.osreboot.ridhvl.painter.HvlCursor;
 import com.osreboot.ridhvl.painter.painter2d.HvlFontPainter2D;
 import com.osreboot.ridhvl.painter.painter2d.HvlPainter2D;
 import com.osreboot.ridhvl.painter.painter2d.HvlTiledRect;
@@ -291,7 +292,7 @@ public class HVLevelEditMainForm extends HvlTemplateInteg2D {
 			}
 			// Right mouse but NOT a ctrl key
 			else if (Mouse.isButtonDown(0) || Mouse.isButtonDown(1)) {
-				if (Mouse.getX() > tilemapBackground.getTotalWidth() && Mouse.getY() < Display.getHeight() - menuBarBackground.getTotalHeight()) {
+				if (Mouse.getX() > tilemapBackground.getTotalWidth() && HvlCursor.getCursorY() < Display.getHeight() - menuBar.getHeight()) {
 					int tileX = getMouseTileX();
 					int tileY = getMouseTileY();
 
