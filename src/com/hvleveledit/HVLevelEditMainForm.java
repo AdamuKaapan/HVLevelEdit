@@ -336,6 +336,8 @@ public class HVLevelEditMainForm extends HvlTemplateInteg2D {
 					currentLayer = tilemap.getLayerCount() - 1;
 
 				layerList.setSelectedIndex(currentLayer);
+			} else if (Keyboard.isKeyDown(Keyboard.KEY_TAB) && layerList.getSelectedIndex() != -1) {
+				transparencySlider.setValue(transparencySlider.getValue() + ((float)Mouse.getDWheel() / 1200));
 			} else if (!tileTextBox.getText().trim().isEmpty() && layerList.getSelectedIndex() != -1) {
 				try {
 					int currentTile = Integer.parseInt(tileTextBox.getText().trim());
@@ -364,6 +366,10 @@ public class HVLevelEditMainForm extends HvlTemplateInteg2D {
 		for (int i = layerCount - 1; i >= 0; i--)
 			layerList.addItem("layer " + i);
 		layerList.setSelectedIndex(0);
+		
+		for(int i = 0; i < tilemap.getLayerCount(); i++){
+			tilemap.getLayer(i).setOpacity(1);
+		}
 	}
 
 	private void sizeUpdate() {
