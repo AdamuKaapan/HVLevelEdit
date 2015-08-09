@@ -62,7 +62,7 @@ public class HVLevelEditMainForm extends HvlTemplateInteg2D {
 	private int tileSize;
 
 	public HVLevelEditMainForm(int frameRateArg, int width, int height, String title, HvlDisplayMode displayModeArg) {
-		super(frameRateArg, width, height, title, 35, 5, displayModeArg);
+		super(frameRateArg, width, height, title, displayModeArg);
 	}
 
 	@Override
@@ -240,7 +240,7 @@ public class HVLevelEditMainForm extends HvlTemplateInteg2D {
 				new HvlButton(0, 0, 32, 32, new HvlTextureDrawable(getTextureLoader().getResource(20)), new HvlTextureDrawable(getTextureLoader().getResource(22))), 
 				new HvlButton(0, 0, 32, 32, new HvlTextureDrawable(getTextureLoader().getResource(19)), new HvlTextureDrawable(getTextureLoader().getResource(21))), 
 				font, new HvlTextureDrawable(getTextureLoader().getResource(24)), new HvlTextureDrawable(getTextureLoader().getResource(25)), 32, 8);
-		layerList.setSelectionChanged(new SelectionChangedCommand() {
+		layerList.setSelectionChangedCommand(new SelectionChangedCommand() {
 
 			@Override
 			public void run(HvlListBox arg0, int indexArg, Object selArg) {
