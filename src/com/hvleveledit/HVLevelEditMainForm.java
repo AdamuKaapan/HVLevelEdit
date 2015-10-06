@@ -534,6 +534,47 @@ public class HVLevelEditMainForm extends HvlTemplateInteg2D {
 
 		return toReturn.toString();
 	}
+	
+	public void loadFile(String path){
+		String fileText = getFileText(path);
+		if (fileText == null)
+			return;
+
+		Texture t = getTexture();
+		if (t == null)
+			return;
+
+		tilemap = HvlLayeredTileMap.load(fileText, false, 0, 0, 64, 64, t);
+		populateLayerList(tilemap.getLayerCount());
+	}
+	
+	private String getFileText(String path) {
+		boolean isValid = false;
+		StringBuilder toReturn = null;
+
+		do {
+
+			File f = new File(path);
+
+			try {
+				BufferedReader reader = new BufferedReader(new FileReader(f));
+				toReturn = new StringBuilder();
+				String line;
+				while ((line = reader.readLine()) != null) {
+					toReturn.append(line);
+					toReturn.append(System.lineSeparator());
+				}
+				reader.close();
+			} catch (IOException e) {
+				JOptionPane.showMessageDialog(null, "Something went wrong... derp?");
+				continue;
+			}
+
+			isValid = true;
+		} while (!isValid);
+
+		return toReturn.toString();
+	}
 
 	private Texture getTexture() {
 		Texture toReturn = null;
