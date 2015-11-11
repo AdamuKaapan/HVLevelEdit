@@ -79,11 +79,11 @@ public class MainEditorWindow extends HvlTemplateInteg2D {
 				.setDefault(
 						new HvlLabeledButton.Builder()
 								.setOffDrawable(new HvlTiledRectDrawable(new HvlTiledRect(getTexture(0), 0.25f, 0.75f,
-										0, 0, 512, bottomBarHeight, 64, 64)))
+										0, 0, 512, bottomBarHeight, 32, 32)))
 				.setHoverDrawable(new HvlTiledRectDrawable(
-						new HvlTiledRect(getTexture(0), 0.25f, 0.75f, 0, 0, 512, bottomBarHeight, 64, 64)))
+						new HvlTiledRect(getTexture(0), 0.25f, 0.75f, 0, 0, 512, bottomBarHeight, 32, 32)))
 				.setOnDrawable(new HvlTiledRectDrawable(
-						new HvlTiledRect(getTexture(0), 0.25f, 0.75f, 0, 0, 512, bottomBarHeight, 64, 64)))
+						new HvlTiledRect(getTexture(0), 0.25f, 0.75f, 0, 0, 512, bottomBarHeight, 32, 32)))
 				.setFont(font).setTextColor(Color.white).setWidth(128).setHeight(128).setUpdateOverride(new ButtonCustomAnimationAction()).build());
 		
 		newButton = new HvlLabeledButton.Builder().setText("new").build();
