@@ -30,15 +30,15 @@ public class MainEditorWindow extends HvlTemplateInteg2D {
 				button.setTextColor(Color.white);
 			
 			if (button.isHovering())
-				button.setTextScale(0.14f);
+				button.setTextScale(0.09f);
 			else
-				button.setTextScale(0.15f);
+				button.setTextScale(0.10f);
 			
 			a.update(delta);
 		}
 	}
 
-	public static float bottomBarHeight = 256f, sideBarWidth = 384f;
+	public static float bottomBarHeight = 196f, sideBarWidth = 384f;
 
 	HvlTiledRect bottomMenuBar;
 	HvlTiledRect sideMenuBar;
@@ -47,7 +47,7 @@ public class MainEditorWindow extends HvlTemplateInteg2D {
 
 	HvlArrangerBox bottomMenuArranger;
 
-	HvlLabeledButton newButton;
+	HvlLabeledButton newButton, openButton, saveButton;
 
 	HvlFontPainter2D font;
 
@@ -71,10 +71,10 @@ public class MainEditorWindow extends HvlTemplateInteg2D {
 		bottomMenuArranger.setBorderU(32);
 		bottomMenuArranger.setBorderD(32);
 		bottomMenuArranger.setBorderL(32);
-		bottomMenuArranger.setBorderR(32);
+		bottomMenuArranger.setBorderR(0);
 		bottomMenuArranger.setxAlign(0.0f);
 		bottomMenuArranger.setyAlign(0.5f);
-
+		
 		HvlComponentDefault
 				.setDefault(
 						new HvlLabeledButton.Builder()
@@ -84,11 +84,15 @@ public class MainEditorWindow extends HvlTemplateInteg2D {
 						new HvlTiledRect(getTexture(0), 0.25f, 0.75f, 0, 0, 512, bottomBarHeight, 64, 64)))
 				.setOnDrawable(new HvlTiledRectDrawable(
 						new HvlTiledRect(getTexture(0), 0.25f, 0.75f, 0, 0, 512, bottomBarHeight, 64, 64)))
-				.setFont(font).setTextColor(Color.white).setUpdateOverride(new ButtonCustomAnimationAction()).build());
-				
-		newButton = new HvlLabeledButton.Builder().setText("new").setWidth(256).setHeight(128).build();
+				.setFont(font).setTextColor(Color.white).setWidth(128).setHeight(128).setUpdateOverride(new ButtonCustomAnimationAction()).build());
+		
+		newButton = new HvlLabeledButton.Builder().setText("new").build();
+		openButton = new HvlLabeledButton.Builder().setText("open").build();
+		saveButton = new HvlLabeledButton.Builder().setText("save").build();
 		
 		bottomMenuArranger.add(newButton);
+		bottomMenuArranger.add(openButton);
+		bottomMenuArranger.add(saveButton);
 		menu.add(bottomMenuArranger);
 
 		HvlMenu.setCurrent(menu);
