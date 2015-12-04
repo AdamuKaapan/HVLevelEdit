@@ -56,6 +56,9 @@ public class MainEditorWindow extends HvlTemplateInteg2D {
 
 	@Override
 	public void initialize() {
+		MainConfig.load();
+		MainConfig.save();
+		
 		getTextureLoader().loadResource("MenuBackground");
 		getTextureLoader().loadResource("Font");
 
@@ -70,7 +73,7 @@ public class MainEditorWindow extends HvlTemplateInteg2D {
 		bottomMenuArranger.setBorderU(32);
 		bottomMenuArranger.setBorderD(32);
 		bottomMenuArranger.setBorderL(32);
-		bottomMenuArranger.setBorderR(32);
+		bottomMenuArranger.setBorderR(0);
 		bottomMenuArranger.setxAlign(0.0f);
 		bottomMenuArranger.setyAlign(0.5f);
 
