@@ -1,7 +1,6 @@
 package com.hvleveledit;
 
 import org.lwjgl.opengl.Display;
-import org.lwjgl.opengl.GL11;
 import org.newdawn.slick.Color;
 
 import com.osreboot.ridhvl.HvlFontUtil;
@@ -23,17 +22,17 @@ public class MainEditorWindow extends HvlTemplateInteg2D {
 		@Override
 		public void run(HvlComponent a, Float delta) {
 			HvlLabeledButton button = (HvlLabeledButton) a;
-					
+
 			if (button.isBeingPressed(0))
 				button.setTextColor(Color.orange);
 			else
 				button.setTextColor(Color.white);
-			
+
 			if (button.isHovering())
 				button.setTextScale(0.09f);
 			else
 				button.setTextScale(0.10f);
-			
+
 			a.update(delta);
 		}
 	}
@@ -60,8 +59,8 @@ public class MainEditorWindow extends HvlTemplateInteg2D {
 		getTextureLoader().loadResource("MenuBackground");
 		getTextureLoader().loadResource("Font");
 
-		font = new HvlFontPainter2D(getTextureLoader().getResource(1), HvlFontUtil.DEFAULT, 2048, 2048, 192, 256, 10);
-
+		font = new HvlFontPainter2D(getTextureLoader().getResource(1), HvlFontUtil.DEFAULT, 192, 256, 10, 1f);
+		
 		menu = new HvlMenu();
 
 		bottomMenuBar = new HvlTiledRect(getTexture(0), 0.25f, 0.75f, 0, 0, 512, bottomBarHeight, 64, 64);
@@ -71,10 +70,10 @@ public class MainEditorWindow extends HvlTemplateInteg2D {
 		bottomMenuArranger.setBorderU(32);
 		bottomMenuArranger.setBorderD(32);
 		bottomMenuArranger.setBorderL(32);
-		bottomMenuArranger.setBorderR(0);
+		bottomMenuArranger.setBorderR(32);
 		bottomMenuArranger.setxAlign(0.0f);
 		bottomMenuArranger.setyAlign(0.5f);
-		
+
 		HvlComponentDefault
 				.setDefault(
 						new HvlLabeledButton.Builder()
@@ -84,21 +83,19 @@ public class MainEditorWindow extends HvlTemplateInteg2D {
 						new HvlTiledRect(getTexture(0), 0.25f, 0.75f, 0, 0, 512, bottomBarHeight, 32, 32)))
 				.setOnDrawable(new HvlTiledRectDrawable(
 						new HvlTiledRect(getTexture(0), 0.25f, 0.75f, 0, 0, 512, bottomBarHeight, 32, 32)))
-				.setFont(font).setTextColor(Color.white).setWidth(128).setHeight(128).setUpdateOverride(new ButtonCustomAnimationAction()).build());
-		
+				.setFont(font).setTextColor(Color.white).setWidth(128).setHeight(128)
+				.setUpdateOverride(new ButtonCustomAnimationAction()).build());
+
 		newButton = new HvlLabeledButton.Builder().setText("new").build();
 		openButton = new HvlLabeledButton.Builder().setText("open").build();
 		saveButton = new HvlLabeledButton.Builder().setText("save").build();
-		
+
 		bottomMenuArranger.add(newButton);
 		bottomMenuArranger.add(openButton);
 		bottomMenuArranger.add(saveButton);
 		menu.add(bottomMenuArranger);
 
 		HvlMenu.setCurrent(menu);
-
-		GL11.glEnable(GL11.GL_BLEND);
-		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 	}
 
 	@Override
