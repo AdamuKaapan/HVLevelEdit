@@ -1,15 +1,24 @@
 package com.hvleveledit;
 
+import java.awt.Dialog.ModalityType;
+
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.UIManager.LookAndFeelInfo;
+
 import org.lwjgl.opengl.Display;
 import org.newdawn.slick.Color;
 
+import com.hvleveledit.swing.NewFileDialog;
 import com.osreboot.ridhvl.HvlFontUtil;
+import com.osreboot.ridhvl.action.HvlAction1;
 import com.osreboot.ridhvl.action.HvlAction2;
 import com.osreboot.ridhvl.display.collection.HvlDisplayModeResizable;
 import com.osreboot.ridhvl.menu.HvlComponent;
 import com.osreboot.ridhvl.menu.HvlComponentDefault;
 import com.osreboot.ridhvl.menu.HvlMenu;
 import com.osreboot.ridhvl.menu.component.HvlArrangerBox;
+import com.osreboot.ridhvl.menu.component.HvlButton;
 import com.osreboot.ridhvl.menu.component.collection.HvlLabeledButton;
 import com.osreboot.ridhvl.menu.component.collection.HvlTiledRectDrawable;
 import com.osreboot.ridhvl.painter.painter2d.HvlFontPainter2D;
@@ -55,15 +64,29 @@ public class MainEditorWindow extends HvlTemplateInteg2D {
 	}
 
 	@Override
+	public void exit() {
+		MainConfig.save();
+		super.exit();
+	}
+	
+	@Override
 	public void initialize() {
+		try {
+			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException
+				| UnsupportedLookAndFeelException e1) {
+			e1.printStackTrace();
+		}
+		
 		MainConfig.load();
 		MainConfig.save();
-		
+		SessionVars.loadTilemapDataFromMainConfig();
+
 		getTextureLoader().loadResource("MenuBackground");
 		getTextureLoader().loadResource("Font");
 
 		font = new HvlFontPainter2D(getTextureLoader().getResource(1), HvlFontUtil.DEFAULT, 192, 256, 10, 1f);
-		
+
 		menu = new HvlMenu();
 
 		bottomMenuBar = new HvlTiledRect(getTexture(0), 0.25f, 0.75f, 0, 0, 512, bottomBarHeight, 64, 64);
@@ -92,6 +115,16 @@ public class MainEditorWindow extends HvlTemplateInteg2D {
 		newButton = new HvlLabeledButton.Builder().setText("new").build();
 		openButton = new HvlLabeledButton.Builder().setText("open").build();
 		saveButton = new HvlLabeledButton.Builder().setText("save").build();
+
+		newButton.setClickedCommand(new HvlAction1<HvlButton>() {
+
+			@Override
+			public void run(HvlButton a) {
+				NewFileDialog dialog = new NewFileDialog();
+				dialog.setModalityType(ModalityType.APPLICATION_MODAL);
+				dialog.setVisible(true);
+			}
+		});
 
 		bottomMenuArranger.add(newButton);
 		bottomMenuArranger.add(openButton);
