@@ -110,6 +110,9 @@ public class MainEditorWindow extends HvlTemplateInteg2D {
 							(Integer) dialog.tilemapHeightSpinner.getValue(), (Integer) dialog.layersSpinner.getValue(),
 							(Integer) dialog.mapWidthSpinner.getValue(), (Integer) dialog.mapHeightSpinner.getValue(),
 							tmapTexture);
+					
+					map.setX(((Display.getWidth() - sideBarWidth) / 2) + sideBarWidth - ((map.getMapWidth() * map.getTileWidth()) / 2));
+					map.setY(((Display.getHeight() - bottomBarHeight) / 2) - ((map.getMapHeight() * map.getTileHeight()) / 2));
 
 					for (int x = 0; x < map.getMapWidth(); x++) {
 						for (int y = 0; y < map.getMapHeight(); y++) {
