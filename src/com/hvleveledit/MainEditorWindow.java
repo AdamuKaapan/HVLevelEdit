@@ -48,6 +48,8 @@ public class MainEditorWindow extends HvlTemplateInteg2D {
 	private HvlFontPainter2D font;
 
 	private HvlMap map;
+	
+	private int selectedTile;
 
 	public MainEditorWindow() {
 		super(60, 1366, 768, "HVLevelEdit", new HvlDisplayModeResizable());
@@ -165,6 +167,13 @@ public class MainEditorWindow extends HvlTemplateInteg2D {
 			map.setX(Math.max(Math.min(map.getX(), Display.getWidth() - map.getTileWidth()), sideBarWidth - ((map.getMapWidth() - 1) * map.getTileWidth())));
 			map.setY(Math.max(Math.min(map.getY(), Display.getHeight() - bottomBarHeight - map.getTileHeight()), -((map.getMapHeight() - 1) * map.getTileHeight())));
 		}
+		
+		if (map != null)
+		{
+			selectedTile += (Mouse.getDWheel() / 120);
+			if (selectedTile < 0) selectedTile = (map.getTilesAcross() * map.getTilesTall()) - 1;
+			if (selectedTile >= map.getTilesAcross() * map.getTilesTall()) selectedTile = 0;
+		}
 	}
 	
 	public void draw(float delta) {
@@ -178,6 +187,8 @@ public class MainEditorWindow extends HvlTemplateInteg2D {
 		HvlPainter2D.hvlDrawQuad(0, 0, sideBarWidth, Display.getHeight() - bottomBarHeight, Color.gray);
 
 		HvlMenu.updateMenus(delta);
+		
+		drawTileSelect();
 	}
 
 	private void drawCellHighlight() {
@@ -198,5 +209,23 @@ public class MainEditorWindow extends HvlTemplateInteg2D {
 
 		HvlPainter2D.hvlDrawQuad(map.getX() + (tX * map.getTileWidth()), map.getY() + (tY * map.getTileHeight()),
 				map.getTileWidth(), map.getTileHeight(), getTextureLoader().getResource(2));
+	}
+	
+	private void drawTileSelect() {
+		if (map == null) return;
+		
+		HvlPainter2D.hvlDrawQuad(16, 16, sideBarWidth - 32, sideBarWidth - 32, map.getTexture());
+		
+		drawTileSelectSquare();
+	}
+	
+	private void drawTileSelectSquare() {
+		if (map == null) return;
+		
+		int tX = selectedTile % map.getTilesAcross();
+		int tY = selectedTile / map.getTilesAcross();
+		
+		float drawWidth = sideBarWidth - 32;
+		HvlPainter2D.hvlDrawQuad(16 + ((drawWidth / map.getTilesAcross()) * tX), 16 + ((drawWidth / map.getTilesTall()) * tY), drawWidth / map.getTilesAcross(), drawWidth / map.getTilesTall(), getTextureLoader().getResource(2));
 	}
 }
