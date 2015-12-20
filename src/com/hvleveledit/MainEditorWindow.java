@@ -9,6 +9,8 @@ import javax.imageio.ImageIO;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
+import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.opengl.Texture;
@@ -33,6 +35,8 @@ import com.osreboot.ridhvl.template.HvlTemplateInteg2D;
 
 public class MainEditorWindow extends HvlTemplateInteg2D {
 
+	public static final int dragKey = Keyboard.KEY_LSHIFT;
+	
 	public static float bottomBarHeight = 96f, sideBarWidth = 384f;
 
 	private HvlMenu menu;
@@ -142,13 +146,27 @@ public class MainEditorWindow extends HvlTemplateInteg2D {
 		bottomMenuArranger.setY(Display.getHeight() - bottomBarHeight);
 		bottomMenuArranger.setWidth(Display.getWidth());
 
+		updateInput();
+		
 		if (map != null) {
 			map.update(delta);
 		}
 
 		draw(delta);
 	}
-
+	
+	private void updateInput() {
+		// Dragging the map
+		if (Keyboard.isKeyDown(dragKey) && Mouse.isButtonDown(0) && map != null) {
+			map.setX(map.getX() + Mouse.getDX());
+			map.setY(map.getY() - Mouse.getDY());
+			
+			// Clamp map inside screen
+			map.setX(Math.max(Math.min(map.getX(), Display.getWidth() - map.getTileWidth()), sideBarWidth - ((map.getMapWidth() - 1) * map.getTileWidth())));
+			map.setY(Math.max(Math.min(map.getY(), Display.getHeight() - bottomBarHeight - map.getTileHeight()), -((map.getMapHeight() - 1) * map.getTileHeight())));
+		}
+	}
+	
 	public void draw(float delta) {
 		if (map != null) {
 			map.draw(delta);
@@ -163,6 +181,8 @@ public class MainEditorWindow extends HvlTemplateInteg2D {
 	}
 
 	private void drawCellHighlight() {
+		if (Keyboard.isKeyDown(dragKey) && Mouse.isButtonDown(0)) return;
+		
 		if (HvlCursor.getCursorX() < sideBarWidth || HvlCursor.getCursorY() > Display.getHeight() - bottomBarHeight) return;
 		
 		if (HvlCursor.getCursorX() < map.getX()
