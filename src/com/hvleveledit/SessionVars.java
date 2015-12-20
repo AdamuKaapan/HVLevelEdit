@@ -13,7 +13,6 @@ public class SessionVars {
 	}
 	
 	public static void loadTilemapDataFromMainConfig() {
-		System.out.println("MCfg " + MainConfig.recentTilemapPath);
 		tilemapPath = MainConfig.recentTilemapPath == null ? "" : MainConfig.recentTilemapPath;
 		tilemapWidth = Math.max(MainConfig.recentTilemapWidth, 1);
 		tilemapHeight = Math.max(MainConfig.recentTilemapHeight, 1);

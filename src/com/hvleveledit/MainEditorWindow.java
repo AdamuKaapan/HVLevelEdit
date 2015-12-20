@@ -1,63 +1,48 @@
 package com.hvleveledit;
 
 import java.awt.Dialog.ModalityType;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 
+import javax.imageio.ImageIO;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
-import javax.swing.UIManager.LookAndFeelInfo;
 
 import org.lwjgl.opengl.Display;
 import org.newdawn.slick.Color;
+import org.newdawn.slick.opengl.Texture;
+import org.newdawn.slick.util.BufferedImageUtil;
 
 import com.hvleveledit.swing.NewFileDialog;
 import com.osreboot.ridhvl.HvlFontUtil;
+import com.osreboot.ridhvl.HvlTextureUtil;
 import com.osreboot.ridhvl.action.HvlAction1;
-import com.osreboot.ridhvl.action.HvlAction2;
 import com.osreboot.ridhvl.display.collection.HvlDisplayModeResizable;
-import com.osreboot.ridhvl.menu.HvlComponent;
+import com.osreboot.ridhvl.map.HvlMap;
 import com.osreboot.ridhvl.menu.HvlComponentDefault;
 import com.osreboot.ridhvl.menu.HvlMenu;
 import com.osreboot.ridhvl.menu.component.HvlArrangerBox;
 import com.osreboot.ridhvl.menu.component.HvlButton;
 import com.osreboot.ridhvl.menu.component.collection.HvlLabeledButton;
-import com.osreboot.ridhvl.menu.component.collection.HvlTiledRectDrawable;
+import com.osreboot.ridhvl.menu.component.collection.HvlTextureDrawable;
 import com.osreboot.ridhvl.painter.painter2d.HvlFontPainter2D;
-import com.osreboot.ridhvl.painter.painter2d.HvlTiledRect;
+import com.osreboot.ridhvl.painter.painter2d.HvlPainter2D;
 import com.osreboot.ridhvl.template.HvlTemplateInteg2D;
 
 public class MainEditorWindow extends HvlTemplateInteg2D {
 
-	public class ButtonCustomAnimationAction extends HvlAction2<HvlComponent, Float> {
-		@Override
-		public void run(HvlComponent a, Float delta) {
-			HvlLabeledButton button = (HvlLabeledButton) a;
+	public static float bottomBarHeight = 96f, sideBarWidth = 384f;
 
-			if (button.isBeingPressed(0))
-				button.setTextColor(Color.orange);
-			else
-				button.setTextColor(Color.white);
+	private HvlMenu menu;
 
-			if (button.isHovering())
-				button.setTextScale(0.09f);
-			else
-				button.setTextScale(0.10f);
+	private HvlArrangerBox bottomMenuArranger;
 
-			a.update(delta);
-		}
-	}
+	private HvlLabeledButton newButton, openButton, saveButton;
 
-	public static float bottomBarHeight = 196f, sideBarWidth = 384f;
+	private HvlFontPainter2D font;
 
-	HvlTiledRect bottomMenuBar;
-	HvlTiledRect sideMenuBar;
-
-	HvlMenu menu;
-
-	HvlArrangerBox bottomMenuArranger;
-
-	HvlLabeledButton newButton, openButton, saveButton;
-
-	HvlFontPainter2D font;
+	private HvlMap map;
 
 	public MainEditorWindow() {
 		super(60, 1366, 768, "HVLevelEdit", new HvlDisplayModeResizable());
@@ -68,7 +53,7 @@ public class MainEditorWindow extends HvlTemplateInteg2D {
 		MainConfig.save();
 		super.exit();
 	}
-	
+
 	@Override
 	public void initialize() {
 		try {
@@ -77,7 +62,7 @@ public class MainEditorWindow extends HvlTemplateInteg2D {
 				| UnsupportedLookAndFeelException e1) {
 			e1.printStackTrace();
 		}
-		
+
 		MainConfig.load();
 		MainConfig.save();
 		SessionVars.loadTilemapDataFromMainConfig();
@@ -85,32 +70,25 @@ public class MainEditorWindow extends HvlTemplateInteg2D {
 		getTextureLoader().loadResource("MenuBackground");
 		getTextureLoader().loadResource("Font");
 
-		font = new HvlFontPainter2D(getTextureLoader().getResource(1), HvlFontUtil.DEFAULT, 192, 256, 10, 1f);
+		font = new HvlFontPainter2D(getTextureLoader().getResource(1), HvlFontUtil.DEFAULT, 112, 144, 0, 0.2f);
 
 		menu = new HvlMenu();
 
-		bottomMenuBar = new HvlTiledRect(getTexture(0), 0.25f, 0.75f, 0, 0, 512, bottomBarHeight, 64, 64);
-		sideMenuBar = new HvlTiledRect(getTexture(0), 0.25f, 0.75f, 0, 0, sideBarWidth, 512, 64, 64);
-
-		bottomMenuArranger = new HvlArrangerBox(0, 0, 512, 512, HvlArrangerBox.ArrangementStyle.HORIZONTAL);
-		bottomMenuArranger.setBorderU(32);
-		bottomMenuArranger.setBorderD(32);
+		bottomMenuArranger = new HvlArrangerBox(0, 0, 512, bottomBarHeight, HvlArrangerBox.ArrangementStyle.HORIZONTAL);
+		bottomMenuArranger.setBorderU(16);
+		bottomMenuArranger.setBorderD(16);
 		bottomMenuArranger.setBorderL(32);
 		bottomMenuArranger.setBorderR(0);
 		bottomMenuArranger.setxAlign(0.0f);
 		bottomMenuArranger.setyAlign(0.5f);
 
 		HvlComponentDefault
-				.setDefault(
-						new HvlLabeledButton.Builder()
-								.setOffDrawable(new HvlTiledRectDrawable(new HvlTiledRect(getTexture(0), 0.25f, 0.75f,
-										0, 0, 512, bottomBarHeight, 32, 32)))
-				.setHoverDrawable(new HvlTiledRectDrawable(
-						new HvlTiledRect(getTexture(0), 0.25f, 0.75f, 0, 0, 512, bottomBarHeight, 32, 32)))
-				.setOnDrawable(new HvlTiledRectDrawable(
-						new HvlTiledRect(getTexture(0), 0.25f, 0.75f, 0, 0, 512, bottomBarHeight, 32, 32)))
-				.setFont(font).setTextColor(Color.white).setWidth(128).setHeight(128)
-				.setUpdateOverride(new ButtonCustomAnimationAction()).build());
+				.setDefault(new HvlLabeledButton.Builder()
+						.setOffDrawable(new HvlTextureDrawable(HvlTextureUtil.getColoredRect(64, 64, Color.darkGray)))
+						.setHoverDrawable(
+								new HvlTextureDrawable(HvlTextureUtil.getColoredRect(64, 64, Color.lightGray)))
+				.setOnDrawable(new HvlTextureDrawable(HvlTextureUtil.getColoredRect(64, 64, Color.darkGray)))
+				.setFont(font).setTextColor(Color.white).setWidth(64).setHeight(64).setTextScale(0.7f).build());
 
 		newButton = new HvlLabeledButton.Builder().setText("new").build();
 		openButton = new HvlLabeledButton.Builder().setText("open").build();
@@ -123,6 +101,24 @@ public class MainEditorWindow extends HvlTemplateInteg2D {
 				NewFileDialog dialog = new NewFileDialog();
 				dialog.setModalityType(ModalityType.APPLICATION_MODAL);
 				dialog.setVisible(true);
+
+				try {
+					BufferedImage loaded = ImageIO.read(new File(dialog.tilemapPathTextBox.getText()));
+					Texture tmapTexture = BufferedImageUtil.getTexture("tilemap", loaded);
+
+					map = new HvlMap(0, 0, 64, 64, (Integer) dialog.tilemapWidthSpinner.getValue(),
+							(Integer) dialog.tilemapHeightSpinner.getValue(), (Integer) dialog.layersSpinner.getValue(),
+							(Integer) dialog.mapWidthSpinner.getValue(), (Integer) dialog.mapHeightSpinner.getValue(),
+							tmapTexture);
+
+					for (int x = 0; x < map.getMapWidth(); x++) {
+						for (int y = 0; y < map.getMapHeight(); y++) {
+							map.setTile(0, x, y, 0);
+						}
+					}
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 			}
 		});
 
@@ -136,23 +132,24 @@ public class MainEditorWindow extends HvlTemplateInteg2D {
 
 	@Override
 	public void update(float delta) {
+		bottomMenuArranger.setY(Display.getHeight() - bottomBarHeight);
+		bottomMenuArranger.setWidth(Display.getWidth());
 
-		bottomMenuBar.setY(Display.getHeight() - bottomBarHeight);
-		bottomMenuBar.setTotalWidth(Display.getWidth());
-
-		bottomMenuArranger.setX(bottomMenuBar.getX());
-		bottomMenuArranger.setY(bottomMenuBar.getY());
-		bottomMenuArranger.setWidth(bottomMenuBar.getTotalWidth());
-		bottomMenuArranger.setHeight(bottomMenuBar.getTotalHeight());
-
-		sideMenuBar.setTotalHeight(Display.getHeight() - bottomBarHeight);
+		if (map != null) {
+			map.update(delta);
+		}
 
 		draw(delta);
 	}
 
 	public void draw(float delta) {
-		bottomMenuBar.draw();
-		sideMenuBar.draw();
+		if (map != null) {
+			map.draw(delta);
+		}
+		
+		HvlPainter2D.hvlDrawQuad(0, Display.getHeight() - bottomBarHeight, Display.getWidth(), bottomBarHeight,
+				Color.gray);
+		HvlPainter2D.hvlDrawQuad(0, 0, sideBarWidth, Display.getHeight() - bottomBarHeight, Color.gray);
 
 		HvlMenu.updateMenus(delta);
 	}

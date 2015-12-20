@@ -23,12 +23,12 @@ public class NewFileDialog extends JDialog {
 	public boolean confirmed;
 	
 	private static final long serialVersionUID = 1L;
-	private JSpinner tilemapWidthSpinner;
-	private JSpinner tilemapHeightSpinner;
-	private JSpinner mapWidthSpinner;
-	private JSpinner mapHeightSpinner;
-	private JSpinner layersSpinner;
-	private JTextField tilemapPathTextBox;
+	public JSpinner tilemapWidthSpinner;
+	public JSpinner tilemapHeightSpinner;
+	public JSpinner mapWidthSpinner;
+	public JSpinner mapHeightSpinner;
+	public JSpinner layersSpinner;
+	public JTextField tilemapPathTextBox;
 
 	public NewFileDialog() {
 		
