@@ -26,6 +26,7 @@ import com.osreboot.ridhvl.menu.component.HvlArrangerBox;
 import com.osreboot.ridhvl.menu.component.HvlButton;
 import com.osreboot.ridhvl.menu.component.collection.HvlLabeledButton;
 import com.osreboot.ridhvl.menu.component.collection.HvlTextureDrawable;
+import com.osreboot.ridhvl.painter.HvlCursor;
 import com.osreboot.ridhvl.painter.painter2d.HvlFontPainter2D;
 import com.osreboot.ridhvl.painter.painter2d.HvlPainter2D;
 import com.osreboot.ridhvl.template.HvlTemplateInteg2D;
@@ -69,6 +70,7 @@ public class MainEditorWindow extends HvlTemplateInteg2D {
 
 		getTextureLoader().loadResource("MenuBackground");
 		getTextureLoader().loadResource("Font");
+		getTextureLoader().loadResource("TileSquare");
 
 		font = new HvlFontPainter2D(getTextureLoader().getResource(1), HvlFontUtil.DEFAULT, 112, 144, 0, 0.2f);
 
@@ -110,9 +112,11 @@ public class MainEditorWindow extends HvlTemplateInteg2D {
 							(Integer) dialog.tilemapHeightSpinner.getValue(), (Integer) dialog.layersSpinner.getValue(),
 							(Integer) dialog.mapWidthSpinner.getValue(), (Integer) dialog.mapHeightSpinner.getValue(),
 							tmapTexture);
-					
-					map.setX(((Display.getWidth() - sideBarWidth) / 2) + sideBarWidth - ((map.getMapWidth() * map.getTileWidth()) / 2));
-					map.setY(((Display.getHeight() - bottomBarHeight) / 2) - ((map.getMapHeight() * map.getTileHeight()) / 2));
+
+					map.setX(((Display.getWidth() - sideBarWidth) / 2) + sideBarWidth
+							- ((map.getMapWidth() * map.getTileWidth()) / 2));
+					map.setY(((Display.getHeight() - bottomBarHeight) / 2)
+							- ((map.getMapHeight() * map.getTileHeight()) / 2));
 
 					for (int x = 0; x < map.getMapWidth(); x++) {
 						for (int y = 0; y < map.getMapHeight(); y++) {
@@ -148,12 +152,31 @@ public class MainEditorWindow extends HvlTemplateInteg2D {
 	public void draw(float delta) {
 		if (map != null) {
 			map.draw(delta);
+			drawCellHighlight();
 		}
-		
+
 		HvlPainter2D.hvlDrawQuad(0, Display.getHeight() - bottomBarHeight, Display.getWidth(), bottomBarHeight,
 				Color.gray);
 		HvlPainter2D.hvlDrawQuad(0, 0, sideBarWidth, Display.getHeight() - bottomBarHeight, Color.gray);
 
 		HvlMenu.updateMenus(delta);
+	}
+
+	private void drawCellHighlight() {
+		if (HvlCursor.getCursorX() < sideBarWidth || HvlCursor.getCursorY() > Display.getHeight() - bottomBarHeight) return;
+		
+		if (HvlCursor.getCursorX() < map.getX()
+				|| HvlCursor.getCursorX() > map.getX() + (map.getMapWidth() * map.getTileWidth()))
+			return;
+		
+		if (HvlCursor.getCursorY() < map.getY()
+				|| HvlCursor.getCursorY() > map.getY() + (map.getMapHeight() * map.getTileHeight()))
+			return;
+		
+		int tX = map.worldXToTile(HvlCursor.getCursorX());
+		int tY = map.worldYToTile(HvlCursor.getCursorY());
+
+		HvlPainter2D.hvlDrawQuad(map.getX() + (tX * map.getTileWidth()), map.getY() + (tY * map.getTileHeight()),
+				map.getTileWidth(), map.getTileHeight(), getTextureLoader().getResource(2));
 	}
 }
