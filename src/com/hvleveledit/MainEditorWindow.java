@@ -38,6 +38,7 @@ import com.osreboot.ridhvl.template.HvlTemplateInteg2D;
 public class MainEditorWindow extends HvlTemplateInteg2D {
 
 	public static final int dragKey = Keyboard.KEY_LSHIFT;
+	public static final int zoomKey = Keyboard.KEY_LCONTROL;
 
 	public static float bottomBarHeight = 96f, sideBarWidth = 384f;
 
@@ -212,9 +213,16 @@ public class MainEditorWindow extends HvlTemplateInteg2D {
 			map.setY(Math.max(Math.min(map.getY(), Display.getHeight() - bottomBarHeight - map.getTileHeight()),
 					-((map.getMapHeight() - 1) * map.getTileHeight())));
 		}
+		
+		// Zooming the map
+		if (map != null && Keyboard.isKeyDown(zoomKey)) {
+			float dWheel = Mouse.getDWheel();
+			map.setTileWidth(map.getTileWidth() + (dWheel / 120));
+			map.setTileHeight(map.getTileHeight() + (dWheel / 120));
+		}
 
 		// Tile scroll-select
-		if (map != null) {
+		if (map != null && !Keyboard.isKeyDown(zoomKey)) {
 			selectedTile += (Mouse.getDWheel() / 120);
 			if (selectedTile < 0)
 				selectedTile = (map.getTilesAcross() * map.getTilesTall()) - 1;
