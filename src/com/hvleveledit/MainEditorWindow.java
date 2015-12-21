@@ -147,6 +147,8 @@ public class MainEditorWindow extends HvlTemplateInteg2D {
 
 			@Override
 			public void run(HvlButton a) {
+				if (map == null) return;
+				
 				if (SessionVars.currentFile == null) {
 					JFileChooser fileChooser = new JFileChooser();
 					fileChooser.setAcceptAllFileFilterUsed(false);
