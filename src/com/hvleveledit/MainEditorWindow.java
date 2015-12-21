@@ -6,8 +6,10 @@ import java.io.File;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
+import javax.swing.JFileChooser;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.filechooser.FileFilter;
 
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
@@ -110,6 +112,9 @@ public class MainEditorWindow extends HvlTemplateInteg2D {
 				dialog.setModalityType(ModalityType.APPLICATION_MODAL);
 				dialog.setVisible(true);
 
+				if (!dialog.confirmed)
+					return;
+
 				try {
 					BufferedImage loaded = ImageIO.read(new File(dialog.tilemapPathTextBox.getText()));
 					Texture tmapTexture = BufferedImageUtil.getTexture("tilemap", loaded);
@@ -129,9 +134,47 @@ public class MainEditorWindow extends HvlTemplateInteg2D {
 							map.setTile(0, x, y, 0);
 						}
 					}
+
+					SessionVars.currentFile = null;
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
+			}
+		});
+
+		saveButton.setClickedCommand(new HvlAction1<HvlButton>() {
+
+			@Override
+			public void run(HvlButton a) {
+				if (SessionVars.currentFile == null) {
+					JFileChooser fileChooser = new JFileChooser();
+					fileChooser.setAcceptAllFileFilterUsed(false);
+					fileChooser.setFileFilter(new FileFilter() {
+
+						@Override
+						public boolean accept(File f) {
+							return f.getName().endsWith(".hvlmap");
+						}
+
+						@Override
+						public String getDescription() {
+							return "HvlMap file (.hvlmap)";
+						}
+					});
+					int result = fileChooser.showSaveDialog(null);
+
+					if (result == JFileChooser.CANCEL_OPTION || result == JFileChooser.ERROR_OPTION)
+						return;
+
+					String path = fileChooser.getSelectedFile().getAbsolutePath();
+					if (path.endsWith(".hvlmap"))
+					{
+						path = path.substring(0, path.length() - 7);
+					}
+
+					SessionVars.currentFile = path;
+				}
+				map.save(SessionVars.currentFile);
 			}
 		});
 
@@ -238,7 +281,7 @@ public class MainEditorWindow extends HvlTemplateInteg2D {
 
 		HvlPainter2D.hvlDrawQuad(map.getX() + (tX * map.getTileWidth()), map.getY() + (tY * map.getTileHeight()),
 				map.getTileWidth(), map.getTileHeight(), getTextureLoader().getResource(2),
-				new Color(1f, 1f, 1f, (float) Math.abs(Math.sin(getTimer().getTotalTime() * 2))));
+				new Color(1f, 1f, 1f, 0.5f + (0.5f *(float) Math.abs(Math.sin(getTimer().getTotalTime() * 2)))));
 	}
 
 	private void drawTileSelect() {
@@ -284,7 +327,7 @@ public class MainEditorWindow extends HvlTemplateInteg2D {
 		HvlPainter2D.hvlDrawQuad(16 + ((drawWidth / map.getTilesAcross()) * tX),
 				16 + ((drawWidth / map.getTilesTall()) * tY), drawWidth / map.getTilesAcross(),
 				drawWidth / map.getTilesTall(), getTextureLoader().getResource(2),
-				new Color(1f, 1f, 1f, (float) Math.abs(Math.sin(getTimer().getTotalTime() * 2))));
+				new Color(1f, 1f, 1f, 0.5f + (0.5f *(float) Math.abs(Math.sin(getTimer().getTotalTime() * 2)))));
 	}
 
 	private boolean cursorInMap() {

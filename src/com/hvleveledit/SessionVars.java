@@ -4,6 +4,7 @@ public class SessionVars {
 	public static String tilemapPath;
 	public static int tilemapWidth, tilemapHeight;
 	public static int mapLayers;
+	public static String currentFile;
 	
 	public static void saveTilemapDataToMainConfig() {
 		MainConfig.recentTilemapPath = tilemapPath;
