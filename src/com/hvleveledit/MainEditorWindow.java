@@ -19,6 +19,7 @@ import org.newdawn.slick.opengl.Texture;
 import org.newdawn.slick.util.BufferedImageUtil;
 
 import com.hvleveledit.swing.NewFileDialog;
+import com.hvleveledit.swing.OpenFileDialog;
 import com.osreboot.ridhvl.HvlFontUtil;
 import com.osreboot.ridhvl.HvlTextureUtil;
 import com.osreboot.ridhvl.action.HvlAction1;
@@ -143,12 +144,47 @@ public class MainEditorWindow extends HvlTemplateInteg2D {
 			}
 		});
 
+		openButton.setClickedCommand(new HvlAction1<HvlButton>() {
+
+			@Override
+			public void run(HvlButton a) {
+				OpenFileDialog dialog = new OpenFileDialog();
+				dialog.setModalityType(ModalityType.APPLICATION_MODAL);
+				dialog.setVisible(true);
+
+				if (!dialog.confirmed)
+					return;
+				
+				try {
+					BufferedImage loaded = ImageIO.read(new File(dialog.tilemapPathTextBox.getText()));
+					Texture tmapTexture = BufferedImageUtil.getTexture("tilemap", loaded);
+					
+					String path = dialog.pathTextBox.getText();
+					if (path.endsWith(".hvlmap")) {
+						path = path.substring(0, path.length() - 7);
+					}
+					
+					map = HvlMap.load(path, 0, 0, 64, 64, tmapTexture, (Integer) dialog.tilemapWidthSpinner.getValue(), (Integer) dialog.tilemapHeightSpinner.getValue());
+					map.setX(((Display.getWidth() - sideBarWidth) / 2) + sideBarWidth
+							- ((map.getMapWidth() * map.getTileWidth()) / 2));
+					map.setY(((Display.getHeight() - bottomBarHeight) / 2)
+							- ((map.getMapHeight() * map.getTileHeight()) / 2));
+
+					SessionVars.currentFile = path;
+				}
+				catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		});
+
 		saveButton.setClickedCommand(new HvlAction1<HvlButton>() {
 
 			@Override
 			public void run(HvlButton a) {
-				if (map == null) return;
-				
+				if (map == null)
+					return;
+
 				if (SessionVars.currentFile == null) {
 					JFileChooser fileChooser = new JFileChooser();
 					fileChooser.setAcceptAllFileFilterUsed(false);
@@ -170,8 +206,7 @@ public class MainEditorWindow extends HvlTemplateInteg2D {
 						return;
 
 					String path = fileChooser.getSelectedFile().getAbsolutePath();
-					if (path.endsWith(".hvlmap"))
-					{
+					if (path.endsWith(".hvlmap")) {
 						path = path.substring(0, path.length() - 7);
 					}
 
@@ -215,7 +250,7 @@ public class MainEditorWindow extends HvlTemplateInteg2D {
 			map.setY(Math.max(Math.min(map.getY(), Display.getHeight() - bottomBarHeight - map.getTileHeight()),
 					-((map.getMapHeight() - 1) * map.getTileHeight())));
 		}
-		
+
 		// Zooming the map
 		if (map != null && Keyboard.isKeyDown(zoomKey)) {
 			float dWheel = Mouse.getDWheel();
@@ -291,7 +326,7 @@ public class MainEditorWindow extends HvlTemplateInteg2D {
 
 		HvlPainter2D.hvlDrawQuad(map.getX() + (tX * map.getTileWidth()), map.getY() + (tY * map.getTileHeight()),
 				map.getTileWidth(), map.getTileHeight(), getTextureLoader().getResource(2),
-				new Color(1f, 1f, 1f, 0.5f + (0.5f *(float) Math.abs(Math.sin(getTimer().getTotalTime() * 2)))));
+				new Color(1f, 1f, 1f, 0.5f + (0.5f * (float) Math.abs(Math.sin(getTimer().getTotalTime() * 2)))));
 	}
 
 	private void drawTileSelect() {
@@ -337,7 +372,7 @@ public class MainEditorWindow extends HvlTemplateInteg2D {
 		HvlPainter2D.hvlDrawQuad(16 + ((drawWidth / map.getTilesAcross()) * tX),
 				16 + ((drawWidth / map.getTilesTall()) * tY), drawWidth / map.getTilesAcross(),
 				drawWidth / map.getTilesTall(), getTextureLoader().getResource(2),
-				new Color(1f, 1f, 1f, 0.5f + (0.5f *(float) Math.abs(Math.sin(getTimer().getTotalTime() * 2)))));
+				new Color(1f, 1f, 1f, 0.5f + (0.5f * (float) Math.abs(Math.sin(getTimer().getTotalTime() * 2)))));
 	}
 
 	private boolean cursorInMap() {
