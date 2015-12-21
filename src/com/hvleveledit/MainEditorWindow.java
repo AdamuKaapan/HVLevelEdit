@@ -179,16 +179,32 @@ public class MainEditorWindow extends HvlTemplateInteg2D {
 				selectedTile = 0;
 		}
 
+		// Tile mouse select
+		if (map != null && HvlCursor.getCursorX() > 16 && HvlCursor.getCursorX() < sideBarWidth - 16
+				&& HvlCursor.getCursorY() > 16 && HvlCursor.getCursorY() < sideBarWidth - 16) {
+
+			float drawWidth = sideBarWidth - 32;
+			float tileSize = drawWidth / map.getTilesAcross();
+
+			float relativeX = HvlCursor.getCursorX() - 16;
+			float relativeY = HvlCursor.getCursorY() - 16;
+
+			int tX = (int) (relativeX / tileSize);
+			int tY = (int) (relativeY / tileSize);
+
+			if (Mouse.isButtonDown(0))
+				selectedTile = (tY * map.getTilesAcross()) + tX;
+		}
+
 		// Tile setting
 		if (map != null && cursorInMap() && !Keyboard.isKeyDown(dragKey) && Mouse.isButtonDown(0)) {
 			map.setTile(0, map.worldXToTile(HvlCursor.getCursorX()), map.worldYToTile(HvlCursor.getCursorY()),
 					selectedTile);
 		}
-		
+
 		// Tile erasing
 		if (map != null && cursorInMap() && !Keyboard.isKeyDown(dragKey) && Mouse.isButtonDown(1)) {
-			map.setTile(0, map.worldXToTile(HvlCursor.getCursorX()), map.worldYToTile(HvlCursor.getCursorY()),
-					-1);
+			map.setTile(0, map.worldXToTile(HvlCursor.getCursorX()), map.worldYToTile(HvlCursor.getCursorY()), -1);
 		}
 	}
 
@@ -221,7 +237,8 @@ public class MainEditorWindow extends HvlTemplateInteg2D {
 		int tY = map.worldYToTile(HvlCursor.getCursorY());
 
 		HvlPainter2D.hvlDrawQuad(map.getX() + (tX * map.getTileWidth()), map.getY() + (tY * map.getTileHeight()),
-				map.getTileWidth(), map.getTileHeight(), getTextureLoader().getResource(2));
+				map.getTileWidth(), map.getTileHeight(), getTextureLoader().getResource(2),
+				new Color(1f, 1f, 1f, (float) Math.abs(Math.sin(getTimer().getTotalTime() * 2))));
 	}
 
 	private void drawTileSelect() {
@@ -231,6 +248,7 @@ public class MainEditorWindow extends HvlTemplateInteg2D {
 		HvlPainter2D.hvlDrawQuad(16, 16, sideBarWidth - 32, sideBarWidth - 32, map.getTexture());
 
 		drawTileSelectSquare();
+		drawTileSelectMouseSquare();
 	}
 
 	private void drawTileSelectSquare() {
@@ -244,6 +262,29 @@ public class MainEditorWindow extends HvlTemplateInteg2D {
 		HvlPainter2D.hvlDrawQuad(16 + ((drawWidth / map.getTilesAcross()) * tX),
 				16 + ((drawWidth / map.getTilesTall()) * tY), drawWidth / map.getTilesAcross(),
 				drawWidth / map.getTilesTall(), getTextureLoader().getResource(2));
+	}
+
+	private void drawTileSelectMouseSquare() {
+		if (map == null)
+			return;
+
+		if (HvlCursor.getCursorX() <= 16 || HvlCursor.getCursorX() >= sideBarWidth - 16 || HvlCursor.getCursorY() <= 16
+				|| HvlCursor.getCursorY() >= sideBarWidth - 16)
+			return;
+
+		float drawWidth = sideBarWidth - 32;
+		float tileSize = drawWidth / map.getTilesAcross();
+
+		float relativeX = HvlCursor.getCursorX() - 16;
+		float relativeY = HvlCursor.getCursorY() - 16;
+
+		int tX = (int) (relativeX / tileSize);
+		int tY = (int) (relativeY / tileSize);
+
+		HvlPainter2D.hvlDrawQuad(16 + ((drawWidth / map.getTilesAcross()) * tX),
+				16 + ((drawWidth / map.getTilesTall()) * tY), drawWidth / map.getTilesAcross(),
+				drawWidth / map.getTilesTall(), getTextureLoader().getResource(2),
+				new Color(1f, 1f, 1f, (float) Math.abs(Math.sin(getTimer().getTotalTime() * 2))));
 	}
 
 	private boolean cursorInMap() {
