@@ -39,6 +39,7 @@ import com.osreboot.ridhvl.menu.component.HvlLabel;
 import com.osreboot.ridhvl.menu.component.HvlSlider;
 import com.osreboot.ridhvl.menu.component.HvlTextBox;
 import com.osreboot.ridhvl.menu.component.collection.HvlLabeledButton;
+import com.osreboot.ridhvl.menu.component.collection.HvlLabeledRadioButton;
 import com.osreboot.ridhvl.menu.component.collection.HvlTextureDrawable;
 import com.osreboot.ridhvl.painter.HvlCursor;
 import com.osreboot.ridhvl.painter.painter2d.HvlFontPainter2D;
@@ -57,11 +58,14 @@ public class MainEditorWindow extends HvlTemplateInteg2D {
 
 	private HvlMenu menu;
 
-	private HvlArrangerBox bottomMenuArranger;
+	private HvlArrangerBox fileMenuArranger;
+	private HvlArrangerBox toolMenuArranger;
 	private HvlArrangerBox sideMenuArranger;
 	private HvlArrangerBox layersArranger;
 
 	private HvlLabeledButton newButton, openButton, saveButton;
+
+	private HvlLabeledRadioButton pencilRadio, fillRadio;
 
 	private HvlTextBox layerTextBox;
 	private HvlLabeledButton layerUpButton, layerDownButton;
@@ -111,12 +115,19 @@ public class MainEditorWindow extends HvlTemplateInteg2D {
 
 		menu = new HvlMenu();
 
-		bottomMenuArranger = new HvlArrangerBox(0, 0, 512, bottomBarHeight, HvlArrangerBox.ArrangementStyle.HORIZONTAL);
-		bottomMenuArranger.setBorderU(16);
-		bottomMenuArranger.setBorderD(16);
-		bottomMenuArranger.setBorderL(32);
-		bottomMenuArranger.setxAlign(0.0f);
-		bottomMenuArranger.setyAlign(0.5f);
+		fileMenuArranger = new HvlArrangerBox(0, 0, 512, bottomBarHeight, HvlArrangerBox.ArrangementStyle.HORIZONTAL);
+		fileMenuArranger.setBorderU(16);
+		fileMenuArranger.setBorderD(16);
+		fileMenuArranger.setBorderL(32);
+		fileMenuArranger.setxAlign(0.0f);
+		fileMenuArranger.setyAlign(0.5f);
+
+		toolMenuArranger = new HvlArrangerBox(0, 0, 512, bottomBarHeight, HvlArrangerBox.ArrangementStyle.HORIZONTAL);
+		toolMenuArranger.setBorderU(16);
+		toolMenuArranger.setBorderD(16);
+		toolMenuArranger.setBorderL(32);
+		toolMenuArranger.setxAlign(1.0f);
+		toolMenuArranger.setyAlign(0.5f);
 
 		sideMenuArranger = new HvlArrangerBox(16, sideBarWidth, sideBarWidth - 16,
 				Display.getHeight() - bottomBarHeight - sideBarWidth, HvlArrangerBox.ArrangementStyle.VERTICAL);
@@ -158,6 +169,16 @@ public class MainEditorWindow extends HvlTemplateInteg2D {
 				.setHandleDownDrawable(new HvlTextureDrawable(HvlTextureUtil.getColoredRect(32, 32, Color.darkGray)))
 				.setHandleUpDrawable(new HvlTextureDrawable(HvlTextureUtil.getColoredRect(32, 32, Color.darkGray)))
 				.build());
+
+		HvlComponentDefault
+				.setDefault(
+						new HvlLabeledRadioButton.Builder().setWidth(32).setHeight(32)
+								.setOffDrawable(
+										new HvlTextureDrawable(HvlTextureUtil.getColoredRect(64, 64, Color.lightGray)))
+				.setOffHoverDrawable(new HvlTextureDrawable(HvlTextureUtil.getColoredRect(64, 64, Color.lightGray)))
+				.setOnDrawable(new HvlTextureDrawable(HvlTextureUtil.getColoredRect(64, 64, Color.darkGray)))
+				.setOnHoverDrawable(new HvlTextureDrawable(HvlTextureUtil.getColoredRect(64, 64, Color.darkGray)))
+				.setFont(font).setText("inserttexthere").setColor(Color.white).setScale(1.0f).build());
 
 		layersArranger.add(new HvlLabel.Builder().setText("layer").build());
 
@@ -348,10 +369,18 @@ public class MainEditorWindow extends HvlTemplateInteg2D {
 			}
 		});
 
-		bottomMenuArranger.add(newButton);
-		bottomMenuArranger.add(openButton);
-		bottomMenuArranger.add(saveButton);
-		menu.add(bottomMenuArranger);
+		fileMenuArranger.add(newButton);
+		fileMenuArranger.add(openButton);
+		fileMenuArranger.add(saveButton);
+
+		pencilRadio = new HvlLabeledRadioButton.Builder().setText("pencil").setChecked(true).build();
+		toolMenuArranger.add(pencilRadio);
+
+		fillRadio = new HvlLabeledRadioButton.Builder().setText("fill").build();
+		toolMenuArranger.add(fillRadio);
+
+		menu.add(fileMenuArranger);
+		menu.add(toolMenuArranger);
 		menu.add(sideMenuArranger);
 
 		HvlMenu.setCurrent(menu);
@@ -362,8 +391,11 @@ public class MainEditorWindow extends HvlTemplateInteg2D {
 		previousLMB = currentLMB;
 		currentLMB = Mouse.isButtonDown(0);
 
-		bottomMenuArranger.setY(Display.getHeight() - bottomBarHeight);
-		bottomMenuArranger.setWidth(Display.getWidth());
+		fileMenuArranger.setY(Display.getHeight() - bottomBarHeight);
+		fileMenuArranger.setWidth(Display.getWidth() / 2);
+		toolMenuArranger.setY(Display.getHeight() - bottomBarHeight);
+		toolMenuArranger.setWidth(Display.getWidth() / 2);
+		toolMenuArranger.setX(Display.getWidth() / 2);
 		sideMenuArranger.setHeight(Display.getHeight() - bottomBarHeight - sideBarWidth);
 
 		updateInput();
