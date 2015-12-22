@@ -4,6 +4,8 @@ import java.awt.Dialog.ModalityType;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.imageio.ImageIO;
 import javax.swing.JFileChooser;
@@ -94,7 +96,7 @@ public class MainEditorWindow extends HvlTemplateInteg2D {
 			e1.printStackTrace();
 		}
 
-		entWindow = new EntitiesWindow();
+		entWindow = new EntitiesWindow(this);
 
 		MainConfig.load();
 		MainConfig.save();
@@ -444,7 +446,7 @@ public class MainEditorWindow extends HvlTemplateInteg2D {
 			int tY = map.worldYToTile(HvlCursor.getCursorY());
 
 			if (entWindow.isVisible() && !previousLMB && currentLMB) {
-				if (!entWindow.entityClassTextBox.getText().isEmpty()) {
+				if (!((String) entWindow.entityClassComboBox.getSelectedItem()).isEmpty()) {
 					float xPos = (tX * map.getTileWidth()) + (map.getTileWidth() / 2);
 					float yPos = (tY * map.getTileHeight() + (map.getTileHeight() / 2));
 
@@ -453,8 +455,8 @@ public class MainEditorWindow extends HvlTemplateInteg2D {
 						args[i] = entWindow.constructorArgs.get(i);
 					}
 
-					map.addEntity(
-							new HvlArbitraryEntity(xPos, yPos, map, entWindow.entityClassTextBox.getText(), args));
+					map.addEntity(new HvlArbitraryEntity(xPos, yPos, map,
+							(String) entWindow.entityClassComboBox.getSelectedItem(), args));
 				}
 			} else if (Mouse.isButtonDown(0) && !layerTextBox.getText().isEmpty()) {
 				map.setTile(Integer.parseInt(layerTextBox.getText()), tX, tY, selectedTile);
@@ -508,13 +510,14 @@ public class MainEditorWindow extends HvlTemplateInteg2D {
 		int tX = map.worldXToTile(HvlCursor.getCursorX());
 		int tY = map.worldYToTile(HvlCursor.getCursorY());
 
-		Color shade = new Color(1.0f, 1.0f, 1.0f, 0.5f + (0.5f * (float) Math.abs(Math.sin(getTimer().getTotalTime() * 2))));
-		
+		Color shade = new Color(1.0f, 1.0f, 1.0f,
+				0.5f + (0.5f * (float) Math.abs(Math.sin(getTimer().getTotalTime() * 2))));
+
 		if (entWindow.isVisible()) {
-			int hc = entWindow.entityClassTextBox.getText().hashCode();
-			shade.r = (float)((hc & 0xFF0000) >> 16) / 255;
-			shade.g = (float)((hc & 0x00FF00) >> 8 ) / 255;
-			shade.b = (float)(hc & 0x0000FF) / 255;
+			int hc = ((String) entWindow.entityClassComboBox.getSelectedItem()).hashCode();
+			shade.r = (float) ((hc & 0xFF0000) >> 16) / 255;
+			shade.g = (float) ((hc & 0x00FF00) >> 8) / 255;
+			shade.b = (float) (hc & 0x0000FF) / 255;
 		}
 
 		HvlPainter2D.hvlDrawQuad(map.getX() + (tX * map.getTileWidth()), map.getY() + (tY * map.getTileHeight()),
@@ -621,5 +624,20 @@ public class MainEditorWindow extends HvlTemplateInteg2D {
 			return;
 
 		layerOpacitySlider.setValue(map.getLayerOpacity(Integer.parseInt(layerTextBox.getText())));
+	}
+
+	public List<String> getAllEntityTypes() {
+		List<String> tr = new ArrayList<String>();
+		for (HvlEntity ent : map.getEntities()) {
+			if (ent instanceof HvlArbitraryEntity) {
+				HvlArbitraryEntity arb = (HvlArbitraryEntity) ent;
+				if (!tr.contains(arb.getClassName()))
+					tr.add(arb.getClassName());
+			} else {
+				if (!tr.contains(ent.getClass().getName()))
+					tr.add(ent.getClass().getName());
+			}
+		}
+		return tr;
 	}
 }
