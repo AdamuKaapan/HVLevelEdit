@@ -20,6 +20,7 @@ import org.newdawn.slick.Color;
 import org.newdawn.slick.opengl.Texture;
 import org.newdawn.slick.util.BufferedImageUtil;
 
+import com.hvleveledit.ConnectivitySolver.MapCoord;
 import com.hvleveledit.swing.EntitiesWindow;
 import com.hvleveledit.swing.NewFileDialog;
 import com.hvleveledit.swing.OpenFileDialog;
@@ -474,24 +475,14 @@ public class MainEditorWindow extends HvlTemplateInteg2D {
 
 		// Tile setting
 		if (map != null && cursorInMap() && !Keyboard.isKeyDown(dragKey)) {
-			int tX = map.worldXToTile(HvlCursor.getCursorX());
-			int tY = map.worldYToTile(HvlCursor.getCursorY());
 
 			if (entWindow.isVisible() && !previousLMB && currentLMB) {
-				if (!((String) entWindow.entityClassComboBox.getSelectedItem()).isEmpty()) {
-					float xPos = (tX * map.getTileWidth()) + (map.getTileWidth() / 2);
-					float yPos = (tY * map.getTileHeight() + (map.getTileHeight() / 2));
-
-					String[] args = new String[entWindow.constructorArgs.size()];
-					for (int i = 0; i < entWindow.constructorArgs.size(); i++) {
-						args[i] = entWindow.constructorArgs.get(i);
-					}
-
-					map.addEntity(new HvlArbitraryEntity(xPos, yPos, map,
-							(String) entWindow.entityClassComboBox.getSelectedItem(), args));
-				}
+				placeEntity();
 			} else if (Mouse.isButtonDown(0) && !layerTextBox.getText().isEmpty()) {
-				map.setTile(Integer.parseInt(layerTextBox.getText()), tX, tY, selectedTile);
+				if (pencilRadio.getChecked())
+					placePencil();
+				else if (fillRadio.getChecked())
+					placeFill();
 			}
 		}
 
@@ -510,6 +501,42 @@ public class MainEditorWindow extends HvlTemplateInteg2D {
 			} else {
 				map.setTile(Integer.parseInt(layerTextBox.getText()), tX, tY, -1);
 			}
+		}
+	}
+
+	private void placeEntity() {
+		if (!((String) entWindow.entityClassComboBox.getSelectedItem()).isEmpty()) {
+			int tX = map.worldXToTile(HvlCursor.getCursorX());
+			int tY = map.worldYToTile(HvlCursor.getCursorY());
+
+			float xPos = (tX * map.getTileWidth()) + (map.getTileWidth() / 2);
+			float yPos = (tY * map.getTileHeight() + (map.getTileHeight() / 2));
+
+			String[] args = new String[entWindow.constructorArgs.size()];
+			for (int i = 0; i < entWindow.constructorArgs.size(); i++) {
+				args[i] = entWindow.constructorArgs.get(i);
+			}
+
+			map.addEntity(new HvlArbitraryEntity(xPos, yPos, map,
+					(String) entWindow.entityClassComboBox.getSelectedItem(), args));
+		}
+	}
+
+	private void placePencil() {
+		int tX = map.worldXToTile(HvlCursor.getCursorX());
+		int tY = map.worldYToTile(HvlCursor.getCursorY());
+		map.setTile(Integer.parseInt(layerTextBox.getText()), tX, tY, selectedTile);
+	}
+
+	private void placeFill() {
+		int tX = map.worldXToTile(HvlCursor.getCursorX());
+		int tY = map.worldYToTile(HvlCursor.getCursorY());
+		
+		ConnectivitySolver cs = new ConnectivitySolver(map);
+		List<MapCoord> area = cs.getConnectedTiles(new MapCoord(tX, tY), Integer.parseInt(layerTextBox.getText()));
+
+		for (MapCoord c : area) {
+			map.setTile(Integer.parseInt(layerTextBox.getText()), c.x, c.y, selectedTile);
 		}
 	}
 
@@ -539,21 +566,57 @@ public class MainEditorWindow extends HvlTemplateInteg2D {
 		if (!cursorInMap())
 			return;
 
+		if (entWindow.isVisible()) {
+			drawEntityHighlight();
+		} else if (pencilRadio.getChecked()) {
+			drawPencilHighlight();
+		} else if (fillRadio.getChecked()) {
+			drawFillHighlight();
+		}
+	}
+
+	private void drawEntityHighlight() {
+		int tX = map.worldXToTile(HvlCursor.getCursorX());
+		int tY = map.worldYToTile(HvlCursor.getCursorY());
+
+		int hc = ((String) entWindow.entityClassComboBox.getSelectedItem()).hashCode();
+
+		Color shade = new Color((float) ((hc & 0xFF0000) >> 16) / 255, (float) ((hc & 0x00FF00) >> 8) / 255,
+				(float) (hc & 0x0000FF) / 255,
+				0.5f + (0.5f * (float) Math.abs(Math.sin(getTimer().getTotalTime() * 2))));
+
+		HvlPainter2D.hvlDrawQuad(map.getX() + (tX * map.getTileWidth()), map.getY() + (tY * map.getTileHeight()),
+				map.getTileWidth(), map.getTileHeight(), getTextureLoader().getResource(2), shade);
+	}
+
+	private void drawPencilHighlight() {
 		int tX = map.worldXToTile(HvlCursor.getCursorX());
 		int tY = map.worldYToTile(HvlCursor.getCursorY());
 
 		Color shade = new Color(1.0f, 1.0f, 1.0f,
 				0.5f + (0.5f * (float) Math.abs(Math.sin(getTimer().getTotalTime() * 2))));
 
-		if (entWindow.isVisible()) {
-			int hc = ((String) entWindow.entityClassComboBox.getSelectedItem()).hashCode();
-			shade.r = (float) ((hc & 0xFF0000) >> 16) / 255;
-			shade.g = (float) ((hc & 0x00FF00) >> 8) / 255;
-			shade.b = (float) (hc & 0x0000FF) / 255;
-		}
-
 		HvlPainter2D.hvlDrawQuad(map.getX() + (tX * map.getTileWidth()), map.getY() + (tY * map.getTileHeight()),
 				map.getTileWidth(), map.getTileHeight(), getTextureLoader().getResource(2), shade);
+	}
+
+	private void drawFillHighlight() {
+		if (layerTextBox.getText().isEmpty())
+			return;
+
+		int tX = map.worldXToTile(HvlCursor.getCursorX());
+		int tY = map.worldYToTile(HvlCursor.getCursorY());
+
+		Color shade = new Color(1.0f, 1.0f, 1.0f,
+				0.5f + (0.5f * (float) Math.abs(Math.sin(getTimer().getTotalTime() * 2))));
+
+		ConnectivitySolver cs = new ConnectivitySolver(map);
+		List<MapCoord> area = cs.getConnectedTiles(new MapCoord(tX, tY), Integer.parseInt(layerTextBox.getText()));
+
+		for (MapCoord c : area) {
+			HvlPainter2D.hvlDrawQuad(map.getX() + (c.x * map.getTileWidth()), map.getY() + (c.y * map.getTileHeight()),
+					map.getTileWidth(), map.getTileHeight(), getTextureLoader().getResource(2), shade);
+		}
 	}
 
 	private void drawTileSelect() {
