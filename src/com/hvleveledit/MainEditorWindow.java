@@ -23,6 +23,7 @@ import com.hvleveledit.swing.OpenFileDialog;
 import com.osreboot.ridhvl.HvlFontUtil;
 import com.osreboot.ridhvl.HvlTextureUtil;
 import com.osreboot.ridhvl.action.HvlAction1;
+import com.osreboot.ridhvl.action.HvlAction2;
 import com.osreboot.ridhvl.display.collection.HvlDisplayModeResizable;
 import com.osreboot.ridhvl.map.HvlMap;
 import com.osreboot.ridhvl.menu.HvlComponentDefault;
@@ -30,6 +31,7 @@ import com.osreboot.ridhvl.menu.HvlMenu;
 import com.osreboot.ridhvl.menu.component.HvlArrangerBox;
 import com.osreboot.ridhvl.menu.component.HvlButton;
 import com.osreboot.ridhvl.menu.component.HvlLabel;
+import com.osreboot.ridhvl.menu.component.HvlSlider;
 import com.osreboot.ridhvl.menu.component.HvlTextBox;
 import com.osreboot.ridhvl.menu.component.collection.HvlLabeledButton;
 import com.osreboot.ridhvl.menu.component.collection.HvlTextureDrawable;
@@ -55,6 +57,9 @@ public class MainEditorWindow extends HvlTemplateInteg2D {
 
 	private HvlTextBox layerTextBox;
 	private HvlLabeledButton layerUpButton, layerDownButton;
+	private HvlSlider layerOpacitySlider;
+
+	private HvlLabeledButton entitiesButton;
 
 	private HvlFontPainter2D font;
 
@@ -88,8 +93,9 @@ public class MainEditorWindow extends HvlTemplateInteg2D {
 		getTextureLoader().loadResource("MenuBackground");
 		getTextureLoader().loadResource("Font");
 		getTextureLoader().loadResource("TileSquare");
-		
-		font = new HvlFontPainter2D(getTextureLoader().getResource(1), (String.copyValueOf(HvlFontUtil.DEFAULT) + "-+").toCharArray(), 112, 144, 0, 0.2f);
+
+		font = new HvlFontPainter2D(getTextureLoader().getResource(1),
+				(String.copyValueOf(HvlFontUtil.DEFAULT) + "-+").toCharArray(), 112, 144, 0, 0.2f);
 
 		menu = new HvlMenu();
 
@@ -106,9 +112,9 @@ public class MainEditorWindow extends HvlTemplateInteg2D {
 		sideMenuArranger.setBorderU(16);
 		sideMenuArranger.setxAlign(0.0f);
 		sideMenuArranger.setyAlign(0.0f);
-		
+
 		layersArranger = new HvlArrangerBox(0, 0, sideBarWidth - 32, 32, HvlArrangerBox.ArrangementStyle.HORIZONTAL);
-		layersArranger.setBorderL(16);
+		layersArranger.setBorderR(16);
 		layersArranger.setxAlign(0.0f);
 		layersArranger.setyAlign(0.5f);
 
@@ -130,39 +136,81 @@ public class MainEditorWindow extends HvlTemplateInteg2D {
 		HvlComponentDefault.setDefault(
 				new HvlLabel.Builder().setFont(font).setColor(Color.white).setText("inserttexthere").build());
 
+		HvlComponentDefault.setDefault(new HvlSlider.Builder().setWidth(256).setHeight(32)
+				.setDirection(HvlSlider.Direction.HORIZONTAL).setHandleWidth(32).setHandleHeight(32)
+				.setHandleStartOffset(16).setHandleEndOffset(16).setLiveSnap(false).setSnapInterval(0.01f)
+				.setBackground(new HvlTextureDrawable(HvlTextureUtil.getColoredRect(32, 32, Color.lightGray)))
+				.setHandleDownDrawable(new HvlTextureDrawable(HvlTextureUtil.getColoredRect(32, 32, Color.darkGray)))
+				.setHandleUpDrawable(new HvlTextureDrawable(HvlTextureUtil.getColoredRect(32, 32, Color.darkGray))).build());
+
 		layersArranger.add(new HvlLabel.Builder().setText("layer").build());
 
-		layerTextBox = new HvlTextBox.Builder().setWidth(font.getFontWidth() * 3).setHeight(32).setNumbersOnly(true).setBlacklistCharacters("-").setMaxCharacters(3).build();
+		layerTextBox = new HvlTextBox.Builder().setWidth(font.getFontWidth() * 3).setHeight(32).setNumbersOnly(true)
+				.setBlacklistCharacters("-").setMaxCharacters(3).build();
+		layerTextBox.setTextChangedCommand(new HvlAction2<HvlTextBox, String>() {
+
+			@Override
+			public void run(HvlTextBox a, String b) {
+				updateOpacitySlider();
+			}
+		});
 		layersArranger.add(layerTextBox);
-		
+
 		layerDownButton = new HvlLabeledButton.Builder().setText("-").setWidth(32f).setHeight(32f).build();
-		layerDownButton.setClickedCommand(new HvlAction1<HvlButton>(){
+		layerDownButton.setClickedCommand(new HvlAction1<HvlButton>() {
 			@Override
 			public void run(HvlButton a) {
-				if (map == null) return;
-				
-				if (layerTextBox.getText().isEmpty()) return;
-				
+				if (map == null)
+					return;
+
+				if (layerTextBox.getText().isEmpty())
+					return;
+
 				int layer = Integer.parseInt(layerTextBox.getText());
-				
+
 				layerTextBox.setText(Math.min(Math.max(layer - 1, 0), map.getLayerCount() - 1) + "");
-			}});
+				updateOpacitySlider();
+			}
+		});
 		layersArranger.add(layerDownButton);
-		
+
 		layerUpButton = new HvlLabeledButton.Builder().setText("+").setWidth(32f).setHeight(32f).build();
-		layerUpButton.setClickedCommand(new HvlAction1<HvlButton>(){
+		layerUpButton.setClickedCommand(new HvlAction1<HvlButton>() {
 			@Override
 			public void run(HvlButton a) {
-				if (map == null) return;
-				
-				if (layerTextBox.getText().isEmpty()) return;
-				
+				if (map == null)
+					return;
+
+				if (layerTextBox.getText().isEmpty())
+					return;
+
 				int layer = Integer.parseInt(layerTextBox.getText());
-				
+
 				layerTextBox.setText(Math.min(Math.max(layer + 1, 0), map.getLayerCount() - 1) + "");
-			}});
+				updateOpacitySlider();
+			}
+		});
 		layersArranger.add(layerUpButton);
 
+		sideMenuArranger.add(layersArranger);
+
+		layerOpacitySlider = new HvlSlider.Builder().setWidth(sideBarWidth - 32).setHeight(32).setValue(1.0f).build();
+		layerOpacitySlider.setValueChangedCommand(new HvlAction2<HvlSlider, Float>() {
+			@Override
+			public void run(HvlSlider a, Float b) {
+				if (map == null)
+					return;
+				if (layerTextBox.getText().isEmpty())
+					return;
+
+				map.setLayerOpacity(Integer.parseInt(layerTextBox.getText()), layerOpacitySlider.getValue());
+			}
+		});
+		sideMenuArranger.add(layerOpacitySlider);
+		
+		entitiesButton = new HvlLabeledButton.Builder().setText("place entities").setWidth(sideBarWidth - 32).build();
+		sideMenuArranger.add(entitiesButton);
+		
 		newButton = new HvlLabeledButton.Builder().setText("new").build();
 		openButton = new HvlLabeledButton.Builder().setText("open").build();
 		saveButton = new HvlLabeledButton.Builder().setText("save").build();
@@ -282,7 +330,6 @@ public class MainEditorWindow extends HvlTemplateInteg2D {
 		bottomMenuArranger.add(saveButton);
 		menu.add(bottomMenuArranger);
 		menu.add(sideMenuArranger);
-		sideMenuArranger.add(layersArranger);
 
 		HvlMenu.setCurrent(menu);
 	}
@@ -307,19 +354,18 @@ public class MainEditorWindow extends HvlTemplateInteg2D {
 		if (map == null) {
 			layerTextBox.setEnabled(false);
 			layerTextBox.setText("");
-		}
-		else
+		} else
 			layerTextBox.setEnabled(true);
-		
+
 		// Layer text box default value (if empty and unfocused)
 		if (map != null && !layerTextBox.isFocused() && layerTextBox.getText().isEmpty()) {
 			layerTextBox.setText("0");
 		}
-		
+
 		// Layer text box input fix (if unfocused and not empty
 		if (map != null && !layerTextBox.isFocused() && !layerTextBox.getText().isEmpty()) {
 			int result = Integer.parseInt(layerTextBox.getText());
-			
+
 			layerTextBox.setText(Math.min(Math.max(result, 0), map.getLayerCount() - 1) + "");
 		}
 
@@ -467,5 +513,14 @@ public class MainEditorWindow extends HvlTemplateInteg2D {
 				&& HvlCursor.getCursorX() < map.getX() + (map.getMapWidth() * map.getTileWidth())
 				&& HvlCursor.getCursorY() > map.getY()
 				&& HvlCursor.getCursorY() < map.getY() + (map.getMapHeight() * map.getTileHeight());
+	}
+
+	private void updateOpacitySlider() {
+		if (map == null)
+			return;
+		if (layerTextBox.getText().isEmpty())
+			return;
+
+		layerOpacitySlider.setValue(map.getLayerOpacity(Integer.parseInt(layerTextBox.getText())));
 	}
 }
