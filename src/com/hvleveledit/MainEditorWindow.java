@@ -29,6 +29,8 @@ import com.osreboot.ridhvl.menu.HvlComponentDefault;
 import com.osreboot.ridhvl.menu.HvlMenu;
 import com.osreboot.ridhvl.menu.component.HvlArrangerBox;
 import com.osreboot.ridhvl.menu.component.HvlButton;
+import com.osreboot.ridhvl.menu.component.HvlLabel;
+import com.osreboot.ridhvl.menu.component.HvlTextBox;
 import com.osreboot.ridhvl.menu.component.collection.HvlLabeledButton;
 import com.osreboot.ridhvl.menu.component.collection.HvlTextureDrawable;
 import com.osreboot.ridhvl.painter.HvlCursor;
@@ -46,8 +48,13 @@ public class MainEditorWindow extends HvlTemplateInteg2D {
 	private HvlMenu menu;
 
 	private HvlArrangerBox bottomMenuArranger;
+	private HvlArrangerBox sideMenuArranger;
+	private HvlArrangerBox layersArranger;
 
 	private HvlLabeledButton newButton, openButton, saveButton;
+
+	private HvlTextBox layerTextBox;
+	private HvlLabeledButton layerUpButton, layerDownButton;
 
 	private HvlFontPainter2D font;
 
@@ -81,8 +88,8 @@ public class MainEditorWindow extends HvlTemplateInteg2D {
 		getTextureLoader().loadResource("MenuBackground");
 		getTextureLoader().loadResource("Font");
 		getTextureLoader().loadResource("TileSquare");
-
-		font = new HvlFontPainter2D(getTextureLoader().getResource(1), HvlFontUtil.DEFAULT, 112, 144, 0, 0.2f);
+		
+		font = new HvlFontPainter2D(getTextureLoader().getResource(1), (String.copyValueOf(HvlFontUtil.DEFAULT) + "-+").toCharArray(), 112, 144, 0, 0.2f);
 
 		menu = new HvlMenu();
 
@@ -90,9 +97,20 @@ public class MainEditorWindow extends HvlTemplateInteg2D {
 		bottomMenuArranger.setBorderU(16);
 		bottomMenuArranger.setBorderD(16);
 		bottomMenuArranger.setBorderL(32);
-		bottomMenuArranger.setBorderR(0);
 		bottomMenuArranger.setxAlign(0.0f);
 		bottomMenuArranger.setyAlign(0.5f);
+
+		sideMenuArranger = new HvlArrangerBox(16, sideBarWidth, sideBarWidth - 16,
+				Display.getHeight() - bottomBarHeight - sideBarWidth, HvlArrangerBox.ArrangementStyle.VERTICAL);
+		sideMenuArranger.setBorderR(16);
+		sideMenuArranger.setBorderU(16);
+		sideMenuArranger.setxAlign(0.0f);
+		sideMenuArranger.setyAlign(0.0f);
+		
+		layersArranger = new HvlArrangerBox(0, 0, sideBarWidth - 32, 32, HvlArrangerBox.ArrangementStyle.HORIZONTAL);
+		layersArranger.setBorderL(16);
+		layersArranger.setxAlign(0.0f);
+		layersArranger.setyAlign(0.5f);
 
 		HvlComponentDefault
 				.setDefault(new HvlLabeledButton.Builder()
@@ -101,6 +119,49 @@ public class MainEditorWindow extends HvlTemplateInteg2D {
 								new HvlTextureDrawable(HvlTextureUtil.getColoredRect(64, 64, Color.lightGray)))
 				.setOnDrawable(new HvlTextureDrawable(HvlTextureUtil.getColoredRect(64, 64, Color.darkGray)))
 				.setFont(font).setTextColor(Color.white).setWidth(64).setHeight(64).setTextScale(0.7f).build());
+
+		HvlComponentDefault
+				.setDefault(new HvlTextBox.Builder()
+						.setUnfocusedDrawable(
+								new HvlTextureDrawable(HvlTextureUtil.getColoredRect(64, 64, Color.lightGray)))
+						.setFocusedDrawable(new HvlTextureDrawable(HvlTextureUtil.getColoredRect(64, 64, Color.white)))
+						.setFont(font).setWidth(256).setHeight(32).setText("inserttexthere").build());
+
+		HvlComponentDefault.setDefault(
+				new HvlLabel.Builder().setFont(font).setColor(Color.white).setText("inserttexthere").build());
+
+		layersArranger.add(new HvlLabel.Builder().setText("layer").build());
+
+		layerTextBox = new HvlTextBox.Builder().setWidth(font.getFontWidth() * 3).setHeight(32).setNumbersOnly(true).setBlacklistCharacters("-").setMaxCharacters(3).build();
+		layersArranger.add(layerTextBox);
+		
+		layerDownButton = new HvlLabeledButton.Builder().setText("-").setWidth(32f).setHeight(32f).build();
+		layerDownButton.setClickedCommand(new HvlAction1<HvlButton>(){
+			@Override
+			public void run(HvlButton a) {
+				if (map == null) return;
+				
+				if (layerTextBox.getText().isEmpty()) return;
+				
+				int layer = Integer.parseInt(layerTextBox.getText());
+				
+				layerTextBox.setText(Math.min(Math.max(layer - 1, 0), map.getLayerCount() - 1) + "");
+			}});
+		layersArranger.add(layerDownButton);
+		
+		layerUpButton = new HvlLabeledButton.Builder().setText("+").setWidth(32f).setHeight(32f).build();
+		layerUpButton.setClickedCommand(new HvlAction1<HvlButton>(){
+			@Override
+			public void run(HvlButton a) {
+				if (map == null) return;
+				
+				if (layerTextBox.getText().isEmpty()) return;
+				
+				int layer = Integer.parseInt(layerTextBox.getText());
+				
+				layerTextBox.setText(Math.min(Math.max(layer + 1, 0), map.getLayerCount() - 1) + "");
+			}});
+		layersArranger.add(layerUpButton);
 
 		newButton = new HvlLabeledButton.Builder().setText("new").build();
 		openButton = new HvlLabeledButton.Builder().setText("open").build();
@@ -154,25 +215,25 @@ public class MainEditorWindow extends HvlTemplateInteg2D {
 
 				if (!dialog.confirmed)
 					return;
-				
+
 				try {
 					BufferedImage loaded = ImageIO.read(new File(dialog.tilemapPathTextBox.getText()));
 					Texture tmapTexture = BufferedImageUtil.getTexture("tilemap", loaded);
-					
+
 					String path = dialog.pathTextBox.getText();
 					if (path.endsWith(".hvlmap")) {
 						path = path.substring(0, path.length() - 7);
 					}
-					
-					map = HvlMap.load(path, 0, 0, 64, 64, tmapTexture, (Integer) dialog.tilemapWidthSpinner.getValue(), (Integer) dialog.tilemapHeightSpinner.getValue());
+
+					map = HvlMap.load(path, 0, 0, 64, 64, tmapTexture, (Integer) dialog.tilemapWidthSpinner.getValue(),
+							(Integer) dialog.tilemapHeightSpinner.getValue());
 					map.setX(((Display.getWidth() - sideBarWidth) / 2) + sideBarWidth
 							- ((map.getMapWidth() * map.getTileWidth()) / 2));
 					map.setY(((Display.getHeight() - bottomBarHeight) / 2)
 							- ((map.getMapHeight() * map.getTileHeight()) / 2));
 
 					SessionVars.currentFile = path;
-				}
-				catch (IOException e) {
+				} catch (IOException e) {
 					e.printStackTrace();
 				}
 			}
@@ -220,6 +281,8 @@ public class MainEditorWindow extends HvlTemplateInteg2D {
 		bottomMenuArranger.add(openButton);
 		bottomMenuArranger.add(saveButton);
 		menu.add(bottomMenuArranger);
+		menu.add(sideMenuArranger);
+		sideMenuArranger.add(layersArranger);
 
 		HvlMenu.setCurrent(menu);
 	}
@@ -228,6 +291,7 @@ public class MainEditorWindow extends HvlTemplateInteg2D {
 	public void update(float delta) {
 		bottomMenuArranger.setY(Display.getHeight() - bottomBarHeight);
 		bottomMenuArranger.setWidth(Display.getWidth());
+		sideMenuArranger.setHeight(Display.getHeight() - bottomBarHeight - sideBarWidth);
 
 		updateInput();
 
@@ -239,6 +303,26 @@ public class MainEditorWindow extends HvlTemplateInteg2D {
 	}
 
 	private void updateInput() {
+		// Disable input if there's no map.
+		if (map == null) {
+			layerTextBox.setEnabled(false);
+			layerTextBox.setText("");
+		}
+		else
+			layerTextBox.setEnabled(true);
+		
+		// Layer text box default value (if empty and unfocused)
+		if (map != null && !layerTextBox.isFocused() && layerTextBox.getText().isEmpty()) {
+			layerTextBox.setText("0");
+		}
+		
+		// Layer text box input fix (if unfocused and not empty
+		if (map != null && !layerTextBox.isFocused() && !layerTextBox.getText().isEmpty()) {
+			int result = Integer.parseInt(layerTextBox.getText());
+			
+			layerTextBox.setText(Math.min(Math.max(result, 0), map.getLayerCount() - 1) + "");
+		}
+
 		// Dragging the map
 		if (map != null && Keyboard.isKeyDown(dragKey) && Mouse.isButtonDown(0)) {
 			map.setX(map.getX() + Mouse.getDX());
@@ -285,14 +369,17 @@ public class MainEditorWindow extends HvlTemplateInteg2D {
 		}
 
 		// Tile setting
-		if (map != null && cursorInMap() && !Keyboard.isKeyDown(dragKey) && Mouse.isButtonDown(0)) {
-			map.setTile(0, map.worldXToTile(HvlCursor.getCursorX()), map.worldYToTile(HvlCursor.getCursorY()),
-					selectedTile);
+		if (map != null && cursorInMap() && !Keyboard.isKeyDown(dragKey) && Mouse.isButtonDown(0)
+				&& !layerTextBox.getText().isEmpty()) {
+			map.setTile(Integer.parseInt(layerTextBox.getText()), map.worldXToTile(HvlCursor.getCursorX()),
+					map.worldYToTile(HvlCursor.getCursorY()), selectedTile);
 		}
 
 		// Tile erasing
-		if (map != null && cursorInMap() && !Keyboard.isKeyDown(dragKey) && Mouse.isButtonDown(1)) {
-			map.setTile(0, map.worldXToTile(HvlCursor.getCursorX()), map.worldYToTile(HvlCursor.getCursorY()), -1);
+		if (map != null && cursorInMap() && !Keyboard.isKeyDown(dragKey) && Mouse.isButtonDown(1)
+				&& !layerTextBox.getText().isEmpty()) {
+			map.setTile(Integer.parseInt(layerTextBox.getText()), map.worldXToTile(HvlCursor.getCursorX()),
+					map.worldYToTile(HvlCursor.getCursorY()), -1);
 		}
 	}
 
