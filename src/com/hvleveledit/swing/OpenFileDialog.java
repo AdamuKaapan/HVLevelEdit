@@ -32,7 +32,7 @@ public class OpenFileDialog extends JDialog {
 
 	public OpenFileDialog() {
 		
-		setTitle("New Map");
+		setTitle("Open Map");
 		setBounds(100, 100, 790, 223);
 		getContentPane().setLayout(new MigLayout("", "[][grow,fill][]", "[][][][grow][]"));
 		

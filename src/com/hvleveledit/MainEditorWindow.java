@@ -18,6 +18,7 @@ import org.newdawn.slick.Color;
 import org.newdawn.slick.opengl.Texture;
 import org.newdawn.slick.util.BufferedImageUtil;
 
+import com.hvleveledit.swing.EntitiesWindow;
 import com.hvleveledit.swing.NewFileDialog;
 import com.hvleveledit.swing.OpenFileDialog;
 import com.osreboot.ridhvl.HvlFontUtil;
@@ -46,6 +47,8 @@ public class MainEditorWindow extends HvlTemplateInteg2D {
 	public static final int zoomKey = Keyboard.KEY_LCONTROL;
 
 	public static float bottomBarHeight = 96f, sideBarWidth = 384f;
+
+	private EntitiesWindow entWindow;
 
 	private HvlMenu menu;
 
@@ -85,6 +88,8 @@ public class MainEditorWindow extends HvlTemplateInteg2D {
 				| UnsupportedLookAndFeelException e1) {
 			e1.printStackTrace();
 		}
+		
+		entWindow = new EntitiesWindow();
 
 		MainConfig.load();
 		MainConfig.save();
@@ -136,12 +141,16 @@ public class MainEditorWindow extends HvlTemplateInteg2D {
 		HvlComponentDefault.setDefault(
 				new HvlLabel.Builder().setFont(font).setColor(Color.white).setText("inserttexthere").build());
 
-		HvlComponentDefault.setDefault(new HvlSlider.Builder().setWidth(256).setHeight(32)
-				.setDirection(HvlSlider.Direction.HORIZONTAL).setHandleWidth(32).setHandleHeight(32)
-				.setHandleStartOffset(16).setHandleEndOffset(16).setLiveSnap(false).setSnapInterval(0.01f)
-				.setBackground(new HvlTextureDrawable(HvlTextureUtil.getColoredRect(32, 32, Color.lightGray)))
+		HvlComponentDefault
+				.setDefault(
+						new HvlSlider.Builder().setWidth(256).setHeight(32).setDirection(HvlSlider.Direction.HORIZONTAL)
+								.setHandleWidth(32).setHandleHeight(32).setHandleStartOffset(16).setHandleEndOffset(16)
+								.setLiveSnap(false).setSnapInterval(0.01f)
+								.setBackground(
+										new HvlTextureDrawable(HvlTextureUtil.getColoredRect(32, 32, Color.lightGray)))
 				.setHandleDownDrawable(new HvlTextureDrawable(HvlTextureUtil.getColoredRect(32, 32, Color.darkGray)))
-				.setHandleUpDrawable(new HvlTextureDrawable(HvlTextureUtil.getColoredRect(32, 32, Color.darkGray))).build());
+				.setHandleUpDrawable(new HvlTextureDrawable(HvlTextureUtil.getColoredRect(32, 32, Color.darkGray)))
+				.build());
 
 		layersArranger.add(new HvlLabel.Builder().setText("layer").build());
 
@@ -207,10 +216,17 @@ public class MainEditorWindow extends HvlTemplateInteg2D {
 			}
 		});
 		sideMenuArranger.add(layerOpacitySlider);
-		
+
 		entitiesButton = new HvlLabeledButton.Builder().setText("place entities").setWidth(sideBarWidth - 32).build();
+		entitiesButton.setClickedCommand(new HvlAction1<HvlButton>() {
+
+			@Override
+			public void run(HvlButton a) {
+				entWindow.setVisible(true);
+			}
+		});
 		sideMenuArranger.add(entitiesButton);
-		
+
 		newButton = new HvlLabeledButton.Builder().setText("new").build();
 		openButton = new HvlLabeledButton.Builder().setText("open").build();
 		saveButton = new HvlLabeledButton.Builder().setText("save").build();
