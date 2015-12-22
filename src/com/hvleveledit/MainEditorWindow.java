@@ -26,6 +26,8 @@ import com.osreboot.ridhvl.HvlTextureUtil;
 import com.osreboot.ridhvl.action.HvlAction1;
 import com.osreboot.ridhvl.action.HvlAction2;
 import com.osreboot.ridhvl.display.collection.HvlDisplayModeResizable;
+import com.osreboot.ridhvl.map.HvlArbitraryEntity;
+import com.osreboot.ridhvl.map.HvlEntity;
 import com.osreboot.ridhvl.map.HvlMap;
 import com.osreboot.ridhvl.menu.HvlComponentDefault;
 import com.osreboot.ridhvl.menu.HvlMenu;
@@ -88,7 +90,7 @@ public class MainEditorWindow extends HvlTemplateInteg2D {
 				| UnsupportedLookAndFeelException e1) {
 			e1.printStackTrace();
 		}
-		
+
 		entWindow = new EntitiesWindow();
 
 		MainConfig.load();
@@ -433,15 +435,53 @@ public class MainEditorWindow extends HvlTemplateInteg2D {
 		// Tile setting
 		if (map != null && cursorInMap() && !Keyboard.isKeyDown(dragKey) && Mouse.isButtonDown(0)
 				&& !layerTextBox.getText().isEmpty()) {
-			map.setTile(Integer.parseInt(layerTextBox.getText()), map.worldXToTile(HvlCursor.getCursorX()),
-					map.worldYToTile(HvlCursor.getCursorY()), selectedTile);
+			int tX = map.worldXToTile(HvlCursor.getCursorX());
+			int tY = map.worldYToTile(HvlCursor.getCursorY());
+
+			if (entWindow.isVisible()) {
+				if (!entWindow.entityClassTextBox.getText().isEmpty()) {
+					boolean alreadyExists = false;
+					for (HvlEntity ent : map.getEntities()) {
+						if (map.worldXToTile(ent.getX()) == tX && map.worldYToTile(ent.getY()) == tY) {
+							alreadyExists = true;
+							break;
+						}
+					}
+
+					if (!alreadyExists) {
+
+						float xPos = (tX * map.getTileWidth()) + (map.getTileWidth() / 2);
+						float yPos = (tY * map.getTileHeight() + (map.getTileHeight() / 2));
+
+						String[] args = new String[entWindow.constructorArgs.size()];
+						for (int i = 0; i < entWindow.constructorArgs.size(); i++) {
+							args[i] = entWindow.constructorArgs.get(i);
+						}
+						
+						map.addEntity(
+								new HvlArbitraryEntity(xPos, yPos, map, entWindow.entityClassTextBox.getText(), args));
+					}
+				}
+			} else {
+				map.setTile(Integer.parseInt(layerTextBox.getText()), tX, tY, selectedTile);
+			}
 		}
 
 		// Tile erasing
 		if (map != null && cursorInMap() && !Keyboard.isKeyDown(dragKey) && Mouse.isButtonDown(1)
 				&& !layerTextBox.getText().isEmpty()) {
-			map.setTile(Integer.parseInt(layerTextBox.getText()), map.worldXToTile(HvlCursor.getCursorX()),
-					map.worldYToTile(HvlCursor.getCursorY()), -1);
+			int tX = map.worldXToTile(HvlCursor.getCursorX());
+			int tY = map.worldYToTile(HvlCursor.getCursorY());
+
+			if (entWindow.isVisible()) {
+				for (HvlEntity ent : map.getEntities()) {
+					if (map.worldXToTile(ent.getX()) == tX && map.worldYToTile(ent.getY()) == tY) {
+						ent.delete();
+					}
+				}
+			} else {
+				map.setTile(Integer.parseInt(layerTextBox.getText()), tX, tY, -1);
+			}
 		}
 	}
 
@@ -473,9 +513,11 @@ public class MainEditorWindow extends HvlTemplateInteg2D {
 		int tX = map.worldXToTile(HvlCursor.getCursorX());
 		int tY = map.worldYToTile(HvlCursor.getCursorY());
 
+		Color shade = entWindow.isVisible() ? new Color(0f, 1.0f, 0f, 1.0f) : new Color(1.0f, 1.0f, 1.0f, 1.0f);
+		shade.a = 0.5f + (0.5f * (float) Math.abs(Math.sin(getTimer().getTotalTime() * 2)));
+
 		HvlPainter2D.hvlDrawQuad(map.getX() + (tX * map.getTileWidth()), map.getY() + (tY * map.getTileHeight()),
-				map.getTileWidth(), map.getTileHeight(), getTextureLoader().getResource(2),
-				new Color(1f, 1f, 1f, 0.5f + (0.5f * (float) Math.abs(Math.sin(getTimer().getTotalTime() * 2)))));
+				map.getTileWidth(), map.getTileHeight(), getTextureLoader().getResource(2), shade);
 	}
 
 	private void drawTileSelect() {
