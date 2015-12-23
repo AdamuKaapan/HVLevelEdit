@@ -164,7 +164,7 @@ public class MainEditorWindow extends HvlTemplateInteg2D {
 				.setDefault(
 						new HvlSlider.Builder().setWidth(256).setHeight(32).setDirection(HvlSlider.Direction.HORIZONTAL)
 								.setHandleWidth(32).setHandleHeight(32).setHandleStartOffset(16).setHandleEndOffset(16)
-								.setLiveSnap(false).setSnapInterval(0.01f)
+								.setLiveSnap(false)
 								.setBackground(
 										new HvlTextureDrawable(HvlTextureUtil.getColoredRect(32, 32, Color.lightGray)))
 				.setHandleDownDrawable(new HvlTextureDrawable(HvlTextureUtil.getColoredRect(32, 32, Color.darkGray)))
@@ -531,7 +531,7 @@ public class MainEditorWindow extends HvlTemplateInteg2D {
 	private void placeFill() {
 		int tX = map.worldXToTile(HvlCursor.getCursorX());
 		int tY = map.worldYToTile(HvlCursor.getCursorY());
-		
+
 		ConnectivitySolver cs = new ConnectivitySolver(map);
 		List<MapCoord> area = cs.getConnectedTiles(new MapCoord(tX, tY), Integer.parseInt(layerTextBox.getText()));
 
@@ -709,7 +709,9 @@ public class MainEditorWindow extends HvlTemplateInteg2D {
 		return HvlCursor.getCursorX() > map.getX()
 				&& HvlCursor.getCursorX() < map.getX() + (map.getMapWidth() * map.getTileWidth())
 				&& HvlCursor.getCursorY() > map.getY()
-				&& HvlCursor.getCursorY() < map.getY() + (map.getMapHeight() * map.getTileHeight());
+				&& HvlCursor.getCursorY() < map.getY() + (map.getMapHeight() * map.getTileHeight())
+				&& HvlCursor.getCursorX() > sideBarWidth
+				&& HvlCursor.getCursorY() < Display.getHeight() - bottomBarHeight;
 	}
 
 	private void updateOpacitySlider() {
