@@ -281,9 +281,9 @@ public class MainEditorWindow extends HvlTemplateInteg2D {
 							tmapTexture);
 
 					map.setX(((Display.getWidth() - sideBarWidth) / 2) + sideBarWidth
-							- ((map.getMapWidth() * map.getTileWidth()) / 2));
+							- ((map.getMapWidth() * map.getTileDrawWidth()) / 2));
 					map.setY(((Display.getHeight() - bottomBarHeight) / 2)
-							- ((map.getMapHeight() * map.getTileHeight()) / 2));
+							- ((map.getMapHeight() * map.getTileDrawHeight()) / 2));
 
 					for (int x = 0; x < map.getMapWidth(); x++) {
 						for (int y = 0; y < map.getMapHeight(); y++) {
@@ -318,12 +318,11 @@ public class MainEditorWindow extends HvlTemplateInteg2D {
 						path = path.substring(0, path.length() - 7);
 					}
 
-					map = HvlMap.load(path, 0, 0, 64, 64, tmapTexture, (Integer) dialog.tilemapWidthSpinner.getValue(),
-							(Integer) dialog.tilemapHeightSpinner.getValue(), false);
+					map = HvlMap.load(path, 0, 0, 64, 64, tmapTexture, false);
 					map.setX(((Display.getWidth() - sideBarWidth) / 2) + sideBarWidth
-							- ((map.getMapWidth() * map.getTileWidth()) / 2));
+							- ((map.getMapWidth() * map.getTileDrawWidth()) / 2));
 					map.setY(((Display.getHeight() - bottomBarHeight) / 2)
-							- ((map.getMapHeight() * map.getTileHeight()) / 2));
+							- ((map.getMapHeight() * map.getTileDrawHeight()) / 2));
 
 					SessionVars.currentFile = path;
 				} catch (IOException e) {
@@ -434,17 +433,17 @@ public class MainEditorWindow extends HvlTemplateInteg2D {
 			map.setY(map.getY() - Mouse.getDY());
 
 			// Clamp map inside screen
-			map.setX(Math.max(Math.min(map.getX(), Display.getWidth() - map.getTileWidth()),
-					sideBarWidth - ((map.getMapWidth() - 1) * map.getTileWidth())));
-			map.setY(Math.max(Math.min(map.getY(), Display.getHeight() - bottomBarHeight - map.getTileHeight()),
-					-((map.getMapHeight() - 1) * map.getTileHeight())));
+			map.setX(Math.max(Math.min(map.getX(), Display.getWidth() - map.getTileDrawWidth()),
+					sideBarWidth - ((map.getMapWidth() - 1) * map.getTileDrawWidth())));
+			map.setY(Math.max(Math.min(map.getY(), Display.getHeight() - bottomBarHeight - map.getTileDrawHeight()),
+					-((map.getMapHeight() - 1) * map.getTileDrawHeight())));
 		}
 
 		// Zooming the map
 		if (map != null && Keyboard.isKeyDown(zoomKey)) {
 			float dWheel = Mouse.getDWheel();
-			map.setTileWidth(map.getTileWidth() + (dWheel / 120));
-			map.setTileHeight(map.getTileHeight() + (dWheel / 120));
+			map.setTileDrawWidth(map.getTileDrawWidth() + (dWheel / 120));
+			map.setTileDrawHeight(map.getTileDrawHeight() + (dWheel / 120));
 		}
 
 		// Tile scroll-select
@@ -509,8 +508,8 @@ public class MainEditorWindow extends HvlTemplateInteg2D {
 			int tX = map.worldXToTile(HvlCursor.getCursorX());
 			int tY = map.worldYToTile(HvlCursor.getCursorY());
 
-			float xPos = (tX * map.getTileWidth()) + (map.getTileWidth() / 2);
-			float yPos = (tY * map.getTileHeight() + (map.getTileHeight() / 2));
+			float xPos = (tX * map.getTileDrawWidth()) + (map.getTileDrawWidth() / 2);
+			float yPos = (tY * map.getTileDrawHeight() + (map.getTileDrawHeight() / 2));
 
 			String[] args = new String[entWindow.constructorArgs.size()];
 			for (int i = 0; i < entWindow.constructorArgs.size(); i++) {
@@ -585,8 +584,8 @@ public class MainEditorWindow extends HvlTemplateInteg2D {
 				(float) (hc & 0x0000FF) / 255,
 				0.5f + (0.5f * (float) Math.abs(Math.sin(getTimer().getTotalTime() * 2))));
 
-		HvlPainter2D.hvlDrawQuad(map.getX() + (tX * map.getTileWidth()), map.getY() + (tY * map.getTileHeight()),
-				map.getTileWidth(), map.getTileHeight(), getTextureLoader().getResource(2), shade);
+		HvlPainter2D.hvlDrawQuad(map.getX() + (tX * map.getTileDrawWidth()), map.getY() + (tY * map.getTileDrawHeight()),
+				map.getTileDrawWidth(), map.getTileDrawHeight(), getTextureLoader().getResource(2), shade);
 	}
 
 	private void drawPencilHighlight() {
@@ -596,8 +595,8 @@ public class MainEditorWindow extends HvlTemplateInteg2D {
 		Color shade = new Color(1.0f, 1.0f, 1.0f,
 				0.5f + (0.5f * (float) Math.abs(Math.sin(getTimer().getTotalTime() * 2))));
 
-		HvlPainter2D.hvlDrawQuad(map.getX() + (tX * map.getTileWidth()), map.getY() + (tY * map.getTileHeight()),
-				map.getTileWidth(), map.getTileHeight(), getTextureLoader().getResource(2), shade);
+		HvlPainter2D.hvlDrawQuad(map.getX() + (tX * map.getTileDrawWidth()), map.getY() + (tY * map.getTileDrawHeight()),
+				map.getTileDrawWidth(), map.getTileDrawHeight(), getTextureLoader().getResource(2), shade);
 	}
 
 	private void drawFillHighlight() {
@@ -614,8 +613,8 @@ public class MainEditorWindow extends HvlTemplateInteg2D {
 		List<MapCoord> area = cs.getConnectedTiles(new MapCoord(tX, tY), Integer.parseInt(layerTextBox.getText()));
 
 		for (MapCoord c : area) {
-			HvlPainter2D.hvlDrawQuad(map.getX() + (c.x * map.getTileWidth()), map.getY() + (c.y * map.getTileHeight()),
-					map.getTileWidth(), map.getTileHeight(), getTextureLoader().getResource(2), shade);
+			HvlPainter2D.hvlDrawQuad(map.getX() + (c.x * map.getTileDrawWidth()), map.getY() + (c.y * map.getTileDrawHeight()),
+					map.getTileDrawWidth(), map.getTileDrawHeight(), getTextureLoader().getResource(2), shade);
 		}
 	}
 
@@ -707,9 +706,9 @@ public class MainEditorWindow extends HvlTemplateInteg2D {
 
 	private boolean cursorInMap() {
 		return HvlCursor.getCursorX() > map.getX()
-				&& HvlCursor.getCursorX() < map.getX() + (map.getMapWidth() * map.getTileWidth())
+				&& HvlCursor.getCursorX() < map.getX() + (map.getMapWidth() * map.getTileDrawWidth())
 				&& HvlCursor.getCursorY() > map.getY()
-				&& HvlCursor.getCursorY() < map.getY() + (map.getMapHeight() * map.getTileHeight())
+				&& HvlCursor.getCursorY() < map.getY() + (map.getMapHeight() * map.getTileDrawHeight())
 				&& HvlCursor.getCursorX() > sideBarWidth
 				&& HvlCursor.getCursorY() < Display.getHeight() - bottomBarHeight;
 	}

@@ -1,6 +1,6 @@
 package com.hvleveledit;
 
-import com.osreboot.ridhvl.config.HvlConfigUtil;
+import com.osreboot.ridhvl.configold.HvlConfigUtil;
 
 public class MainConfig {
 
