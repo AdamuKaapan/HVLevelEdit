@@ -131,7 +131,7 @@ public class MainEditorWindow extends HvlTemplateInteg2D {
 		toolMenuArranger.setyAlign(0.5f);
 
 		sideMenuArranger = new HvlArrangerBox(16, sideBarWidth, sideBarWidth - 16,
-				Display.getHeight() - bottomBarHeight - sideBarWidth, HvlArrangerBox.ArrangementStyle.VERTICAL);
+				Display.getDisplayMode().getHeight() - bottomBarHeight - sideBarWidth, HvlArrangerBox.ArrangementStyle.VERTICAL);
 		sideMenuArranger.setBorderR(16);
 		sideMenuArranger.setBorderU(16);
 		sideMenuArranger.setxAlign(0.0f);
@@ -183,7 +183,7 @@ public class MainEditorWindow extends HvlTemplateInteg2D {
 
 		layersArranger.add(new HvlLabel.Builder().setText("layer").build());
 
-		layerTextBox = new HvlTextBox.Builder().setWidth(font.getFontWidth() * 3).setHeight(32).setNumbersOnly(true)
+		layerTextBox = new HvlTextBox.Builder().setWidth(font.getCharWidth() * 3).setHeight(32).setNumbersOnly(true)
 				.setBlacklistCharacters("-").setMaxCharacters(3).build();
 		layerTextBox.setTextChangedCommand(new HvlAction2<HvlTextBox, String>() {
 
@@ -282,7 +282,7 @@ public class MainEditorWindow extends HvlTemplateInteg2D {
 
 					map.setX(((Display.getWidth() - sideBarWidth) / 2) + sideBarWidth
 							- ((map.getMapWidth() * map.getTileDrawWidth()) / 2));
-					map.setY(((Display.getHeight() - bottomBarHeight) / 2)
+					map.setY(((Display.getDisplayMode().getHeight() - bottomBarHeight) / 2)
 							- ((map.getMapHeight() * map.getTileDrawHeight()) / 2));
 
 					for (int x = 0; x < map.getMapWidth(); x++) {
@@ -321,7 +321,7 @@ public class MainEditorWindow extends HvlTemplateInteg2D {
 					map = HvlMap.load(path, 0, 0, 64, 64, tmapTexture, false);
 					map.setX(((Display.getWidth() - sideBarWidth) / 2) + sideBarWidth
 							- ((map.getMapWidth() * map.getTileDrawWidth()) / 2));
-					map.setY(((Display.getHeight() - bottomBarHeight) / 2)
+					map.setY(((Display.getDisplayMode().getHeight() - bottomBarHeight) / 2)
 							- ((map.getMapHeight() * map.getTileDrawHeight()) / 2));
 
 					SessionVars.currentFile = path;
@@ -391,12 +391,12 @@ public class MainEditorWindow extends HvlTemplateInteg2D {
 		previousLMB = currentLMB;
 		currentLMB = Mouse.isButtonDown(0);
 
-		fileMenuArranger.setY(Display.getHeight() - bottomBarHeight);
+		fileMenuArranger.setY(Display.getDisplayMode().getHeight() - bottomBarHeight);
 		fileMenuArranger.setWidth(Display.getWidth() / 2);
-		toolMenuArranger.setY(Display.getHeight() - bottomBarHeight);
+		toolMenuArranger.setY(Display.getDisplayMode().getHeight() - bottomBarHeight);
 		toolMenuArranger.setWidth(Display.getWidth() / 2);
 		toolMenuArranger.setX(Display.getWidth() / 2);
-		sideMenuArranger.setHeight(Display.getHeight() - bottomBarHeight - sideBarWidth);
+		sideMenuArranger.setHeight(Display.getDisplayMode().getHeight() - bottomBarHeight - sideBarWidth);
 
 		updateInput();
 
@@ -435,7 +435,7 @@ public class MainEditorWindow extends HvlTemplateInteg2D {
 			// Clamp map inside screen
 			map.setX(Math.max(Math.min(map.getX(), Display.getWidth() - map.getTileDrawWidth()),
 					sideBarWidth - ((map.getMapWidth() - 1) * map.getTileDrawWidth())));
-			map.setY(Math.max(Math.min(map.getY(), Display.getHeight() - bottomBarHeight - map.getTileDrawHeight()),
+			map.setY(Math.max(Math.min(map.getY(), Display.getDisplayMode().getHeight() - bottomBarHeight - map.getTileDrawHeight()),
 					-((map.getMapHeight() - 1) * map.getTileDrawHeight())));
 		}
 
@@ -545,9 +545,9 @@ public class MainEditorWindow extends HvlTemplateInteg2D {
 			drawCellHighlight();
 		}
 
-		HvlPainter2D.hvlDrawQuad(0, Display.getHeight() - bottomBarHeight, Display.getWidth(), bottomBarHeight,
+		HvlPainter2D.hvlDrawQuad(0, Display.getDisplayMode().getHeight() - bottomBarHeight, Display.getWidth(), bottomBarHeight,
 				Color.gray);
-		HvlPainter2D.hvlDrawQuad(0, 0, sideBarWidth, Display.getHeight() - bottomBarHeight, Color.gray);
+		HvlPainter2D.hvlDrawQuad(0, 0, sideBarWidth, Display.getDisplayMode().getHeight() - bottomBarHeight, Color.gray);
 
 		HvlMenu.updateMenus(delta);
 
@@ -559,7 +559,7 @@ public class MainEditorWindow extends HvlTemplateInteg2D {
 		if (Keyboard.isKeyDown(dragKey) && Mouse.isButtonDown(0))
 			return;
 
-		if (HvlCursor.getCursorX() < sideBarWidth || HvlCursor.getCursorY() > Display.getHeight() - bottomBarHeight)
+		if (HvlCursor.getCursorX() < sideBarWidth || HvlCursor.getCursorY() > Display.getDisplayMode().getHeight() - bottomBarHeight)
 			return;
 
 		if (!cursorInMap())
@@ -699,9 +699,9 @@ public class MainEditorWindow extends HvlTemplateInteg2D {
 
 		float drawScale = 0.5f;
 
-		float height = (font.getFontHeight() * text.split(System.lineSeparator()).length) * drawScale;
+		float height = (font.getCharHeight() * text.split(System.lineSeparator()).length) * drawScale;
 
-		font.drawWord(text.toLowerCase(), HvlCursor.getCursorX(), HvlCursor.getCursorY() - height, 0.5f, Color.white);
+		font.drawWord(text.toLowerCase(), HvlCursor.getCursorX(), HvlCursor.getCursorY() - height, Color.white, 0.5f);
 	}
 
 	private boolean cursorInMap() {
@@ -710,7 +710,7 @@ public class MainEditorWindow extends HvlTemplateInteg2D {
 				&& HvlCursor.getCursorY() > map.getY()
 				&& HvlCursor.getCursorY() < map.getY() + (map.getMapHeight() * map.getTileDrawHeight())
 				&& HvlCursor.getCursorX() > sideBarWidth
-				&& HvlCursor.getCursorY() < Display.getHeight() - bottomBarHeight;
+				&& HvlCursor.getCursorY() < Display.getDisplayMode().getHeight() - bottomBarHeight;
 	}
 
 	private void updateOpacitySlider() {

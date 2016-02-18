@@ -1,6 +1,6 @@
 package com.hvleveledit;
 
-import com.osreboot.ridhvl.configold.HvlConfigUtil;
+import com.osreboot.ridhvl.config.HvlConfigUtil;
 
 public class MainConfig {
 
@@ -14,14 +14,14 @@ public class MainConfig {
 	
 	public static void load() {
 		recentTilemapPath = "";
-		HvlConfigUtil.loadStaticConfig(MainConfig.class, "Conf");
+		HvlConfigUtil.load(MainConfig.class, "Conf", false, true);
 		recentTilemapPath = recentTilemapPath.replaceAll(";", ":");
 	}
 	
 	public static void save() {
 		// Noone will eeeeeeever knoooowwwww... :P
 		recentTilemapPath = recentTilemapPath.replaceAll(":", ";");
-		HvlConfigUtil.saveStaticConfig(MainConfig.class, "Conf");
+		HvlConfigUtil.save(null, "Conf", false, true);
 		recentTilemapPath = recentTilemapPath.replaceAll(";", ":");
 	}
 }
