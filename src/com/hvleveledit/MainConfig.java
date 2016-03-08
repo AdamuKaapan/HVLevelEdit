@@ -21,7 +21,7 @@ public class MainConfig {
 	public static void save() {
 		// Noone will eeeeeeever knoooowwwww... :P
 		recentTilemapPath = recentTilemapPath.replaceAll(":", ";");
-		HvlConfigUtil.save(null, "Conf", false, true);
+		HvlConfigUtil.save(new MainConfig(), "Conf", false, true);
 		recentTilemapPath = recentTilemapPath.replaceAll(";", ":");
 	}
 }

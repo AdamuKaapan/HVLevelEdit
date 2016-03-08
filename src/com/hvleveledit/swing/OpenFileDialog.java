@@ -135,7 +135,7 @@ public class OpenFileDialog extends JDialog {
 
 			@Override
 			public boolean accept(File f) {
-				return f.getName().endsWith(".hvlmap");
+				return f.isDirectory() || f.getName().endsWith(".hvlmap");
 			}
 
 			@Override
