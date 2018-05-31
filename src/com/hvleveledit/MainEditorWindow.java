@@ -87,13 +87,14 @@ public class MainEditorWindow extends HvlTemplateInteg2D {
 	}
 
 	@Override
-	public void exit() {
-		MainConfig.save();
-		super.exit();
-	}
-
-	@Override
 	public void initialize() {
+		EVENT_EXIT.addAction(new HvlAction1<HvlTemplateInteg2D>(){
+			@Override
+			public void run(HvlTemplateInteg2D aArg){
+				MainConfig.save();
+			}
+		});
+		
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException
